@@ -3,1593 +3,520 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>DaveOS — Girlfriend Day Edition</title>
+<title>Something I Planted For You</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --void:#050505;
-  --panel: rgba(8,12,9,0.86);
-  --green:#3dff7a;
-  --green-soft:#8fffb0;
-  --green-dim:#155c2c;
-  --green-glow: rgba(61,255,122,0.45);
-  --cyan:#6bf0e6;
-  --red:#ff4b4b;
-  --amber:#ffc06a;
-  --gold:#e8c07d;
-  --plum1:#170710;
-  --plum2:#3a1128;
-  --plum3:#5e1c3d;
-  --paper:#fbf3e7;
-  --ink:#3c2a1e;
-  --mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
-  --serif: 'Cormorant Garamond', Georgia, serif;
+  --night1:#150c26;
+  --night2:#2c1a3f;
+  --mid1:#4a2748;
+  --mid2:#7a3f56;
+  --dawn1:#c97a86;
+  --dawn2:#f0a8a0;
+  --dawn3:#f6d3b8;
+  --dawn4:#fbe9d4;
+  --sage:#8fae86;
+  --sage-dark:#4f6b4c;
+  --cream:#fff8f0;
+  --ink:#3a2440;
+  --ink-soft:#5a4258;
+  --gold:#d9a45c;
+  --rose:#d97a95;
+  --rose-deep:#b8506f;
+  --display:'Playfair Display', Georgia, serif;
+  --body-font:'Cormorant Garamond', Georgia, serif;
+  --script:'Caveat', cursive;
 }
-
-*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-html,body{
-  margin:0; padding:0; height:100%;
-  background:var(--void);
-  overscroll-behavior:none;
-}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html{ scroll-behavior:smooth; }
 body{
-  font-family:var(--mono);
-  color:var(--green);
-  height:100vh;
-  height:100dvh;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
+  margin:0;
+  font-family:var(--body-font);
+  color:var(--cream);
+  background: linear-gradient(180deg,
+    var(--night1) 0%,
+    var(--night2) 12%,
+    var(--mid1) 30%,
+    var(--mid2) 48%,
+    var(--dawn1) 64%,
+    var(--dawn2) 76%,
+    var(--dawn3) 88%,
+    var(--dawn4) 100%);
+  overflow-x:hidden;
+  position:relative;
 }
-
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+  html{ scroll-behavior:auto; }
 }
 
-/* ---------- background matrix canvas ---------- */
-#matrix-bg{
-  position:fixed; inset:0; width:100%; height:100%;
-  z-index:0; opacity:0.16; pointer-events:none;
-}
-#vignette{
-  position:fixed; inset:0; z-index:1; pointer-events:none;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.75) 100%);
-}
+#fireflies{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 
-/* ---------- start / lock screen ---------- */
-#start-screen{
+/* ---------------- hero / tap to begin ---------------- */
+#hero{
   position:fixed; inset:0; z-index:50;
-  background:var(--void);
+  background: radial-gradient(ellipse at 50% 30%, var(--night2) 0%, var(--night1) 70%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:32px; gap:18px;
-  transition: opacity 0.8s ease, visibility 0.8s ease;
+  text-align:center; padding:32px; gap:14px;
+  transition: opacity 1.4s ease, visibility 1.4s ease;
 }
-#start-screen.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
-.start-title{
-  font-size:clamp(1.1rem,5vw,1.6rem);
-  letter-spacing:0.06em;
-  color:var(--green);
-  text-shadow:0 0 12px var(--green-glow);
-}
-.start-sub{
-  font-size:clamp(0.75rem,3.4vw,0.9rem);
-  color:var(--green-dim);
-  max-width:320px;
-  line-height:1.6;
-}
-.start-btn{
-  margin-top:10px;
-  font-family:var(--mono);
-  background:transparent;
-  border:1px solid var(--green);
-  color:var(--green);
-  padding:14px 28px;
-  font-size:0.95rem;
-  letter-spacing:0.08em;
-  border-radius:4px;
-  cursor:pointer;
-  box-shadow:0 0 18px rgba(61,255,122,0.15) inset, 0 0 12px rgba(61,255,122,0.15);
-  animation:pulseGlow 2.2s ease-in-out infinite;
+#hero.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+.hero-seed{ font-size:2.6rem; margin-bottom:4px; animation:sway 3.5s ease-in-out infinite; }
+@keyframes sway{ 0%,100%{ transform:rotate(-4deg);} 50%{ transform:rotate(4deg);} }
+.hero-eyebrow{ font-family:var(--script); font-size:1.4rem; color:var(--rose); }
+.hero-title{ font-family:var(--display); font-style:italic; font-weight:600; font-size:clamp(1.6rem,7vw,2.4rem); color:var(--cream); max-width:420px; line-height:1.3; }
+.hero-sub{ font-size:1.05rem; color:#cbb8d6; letter-spacing:0.03em; }
+.hero-btn{
+  margin-top:14px;
+  font-family:var(--body-font); font-size:1.05rem; letter-spacing:0.04em;
+  background:transparent; border:1px solid var(--gold); color:var(--dawn3);
+  padding:13px 30px; border-radius:30px; cursor:pointer;
+  animation:pulseGlow 2.4s ease-in-out infinite;
 }
 @keyframes pulseGlow{
-  0%,100%{ box-shadow:0 0 8px rgba(61,255,122,0.15) inset, 0 0 8px rgba(61,255,122,0.15);}
-  50%{ box-shadow:0 0 20px rgba(61,255,122,0.35) inset, 0 0 22px rgba(61,255,122,0.35);}
-}
-.blinking-caret{ display:inline-block; width:0.5em; animation:blink 1s steps(1) infinite; }
-@keyframes blink{ 50%{ opacity:0; } }
-
-/* ---------- terminal window ---------- */
-#app{
-  position:relative; z-index:2;
-  width:100%; max-width:640px;
-  height:100vh;
-  height:100dvh;
-  min-height:0;
-  display:flex; flex-direction:column;
-  padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
-}
-#terminal-window{
-  flex:1;
-  min-height:0;
-  display:flex; flex-direction:column;
-  background:var(--panel);
-  border:1px solid var(--green-dim);
-  border-radius:10px;
-  overflow:hidden;
-  box-shadow:0 0 0 1px rgba(0,0,0,0.4), 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(61,255,122,0.06);
-  backdrop-filter: blur(6px);
-  transition: opacity 0.6s ease, filter 0.6s ease;
-}
-#terminal-window.crashing{ animation: glitchShake 0.35s steps(2) infinite; }
-@keyframes glitchShake{
-  0%{ transform:translate(0,0); filter:hue-rotate(0deg); }
-  25%{ transform:translate(-2px,1px); }
-  50%{ transform:translate(2px,-1px); filter:hue-rotate(20deg); }
-  75%{ transform:translate(-1px,-1px); }
-  100%{ transform:translate(0,0); filter:hue-rotate(0deg); }
-}
-.topbar{
-  display:flex; align-items:center; gap:10px;
-  padding:10px 14px;
-  border-bottom:1px solid var(--green-dim);
-  background:rgba(0,0,0,0.35);
-  flex-shrink:0;
-}
-.dots{ display:flex; gap:6px; }
-.dot{ width:10px; height:10px; border-radius:50%; opacity:0.85; }
-.dot.r{ background:#ff5f56; } .dot.y{ background:#ffbd2e; } .dot.g{ background:#27c93f; }
-.topbar-title{
-  flex:1; text-align:center;
-  font-size:0.72rem; letter-spacing:0.04em;
-  color:var(--green-dim);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  0%,100%{ box-shadow:0 0 6px rgba(217,164,92,0.25); }
+  50%{ box-shadow:0 0 18px rgba(217,164,92,0.5); }
 }
 
-#terminal-body{
-  flex:1; min-height:0; overflow-y:auto;
-  padding:20px 18px 28px;
-  font-size:clamp(0.86rem,3.6vw,1rem);
-  line-height:1.7;
-  -webkit-overflow-scrolling:touch;
-}
-#terminal-body::-webkit-scrollbar{ width:5px; }
-#terminal-body::-webkit-scrollbar-thumb{ background:var(--green-dim); border-radius:3px; }
-
-.line{ margin:0 0 4px 0; text-shadow:0 0 5px rgba(61,255,122,0.28); white-space:pre-wrap; word-wrap:break-word; }
-.line.cyan{ color:var(--cyan); text-shadow:0 0 5px rgba(107,240,230,0.35); }
-.line.dim{ color:var(--green-dim); text-shadow:none; }
-.line.red{ color:var(--red); text-shadow:0 0 6px rgba(255,75,75,0.4); }
-.line.amber{ color:var(--amber); text-shadow:0 0 5px rgba(255,192,106,0.35); }
-.line.center{ text-align:center; }
-.line.big{ font-size:1.15em; font-weight:600; }
-.line.prompt::before{ content:"root@heart:~$ "; color:var(--green-dim); }
-
-.cursor{ display:inline-block; width:0.5em; height:1em; background:var(--green); vertical-align:text-bottom; margin-left:1px; animation:blink 0.9s steps(1) infinite; box-shadow:0 0 6px var(--green-glow); }
-
-.gap{ height:10px; }
-.gap-lg{ height:22px; }
-
-/* ---------- generic interactive controls ---------- */
-.btn-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
-.btn{
-  font-family:var(--mono);
-  background:transparent;
-  color:var(--green);
-  border:1px solid var(--green);
-  padding:11px 18px;
-  border-radius:5px;
-  font-size:0.85rem;
-  letter-spacing:0.03em;
-  cursor:pointer;
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-}
-.btn:hover{ background:rgba(61,255,122,0.08); }
-.btn:active{ transform:scale(0.96); }
-.btn:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
-.btn.primary{ box-shadow:0 0 16px rgba(61,255,122,0.2); }
-.btn.ghost{ border-color:var(--green-dim); color:var(--green-dim); }
-.btn.danger{ border-color:var(--red); color:var(--red); }
-.btn:disabled{ opacity:0.35; cursor:not-allowed; }
-
-.text-input{
-  font-family:var(--mono);
-  background:rgba(0,0,0,0.4);
-  border:1px solid var(--green-dim);
-  color:var(--green);
-  padding:12px 14px;
-  border-radius:5px;
-  font-size:0.95rem;
-  width:100%;
-  margin-top:12px;
-}
-.text-input:focus{ outline:none; border-color:var(--green); box-shadow:0 0 10px rgba(61,255,122,0.2); }
-.text-input::placeholder{ color:var(--green-dim); }
-
-.hint{ font-size:0.78rem; color:var(--green-dim); margin-top:8px; }
-
-/* tap to continue affordance */
-.tap-continue{
-  margin-top:16px; text-align:center;
-  font-size:0.78rem; color:var(--green-dim);
-  letter-spacing:0.08em;
-  animation:fadeInSlow 1s ease;
-}
-
-@keyframes fadeInSlow{ from{opacity:0;} to{opacity:1;} }
-@keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-.enter{ animation:fadeIn 0.5s ease both; }
-
-/* ---------- glassmorphism modal (hidden files) ---------- */
-.modal-overlay{
-  position:fixed; inset:0; z-index:40;
-  background:rgba(0,0,0,0.55);
-  display:flex; align-items:center; justify-content:center;
-  padding:20px;
-  opacity:0; pointer-events:none;
-  transition:opacity 0.3s ease;
-}
-.modal-overlay.show{ opacity:1; pointer-events:auto; }
-.modal-card{
-  width:100%; max-width:440px;
-  background:rgba(20,28,22,0.55);
-  border:1px solid rgba(61,255,122,0.35);
-  border-radius:14px;
-  padding:22px 20px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow:0 20px 60px rgba(0,0,0,0.5);
-  transform:translateY(14px) scale(0.98);
-  transition:transform 0.35s ease;
-}
-.modal-overlay.show .modal-card{ transform:translateY(0) scale(1); }
-.modal-title{ color:var(--cyan); font-size:0.95rem; letter-spacing:0.05em; margin-bottom:10px; }
-.modal-body{ font-size:0.88rem; line-height:1.75; color:var(--green-soft); }
-.modal-close{ margin-top:16px; }
-
-/* ---------- folder grid ---------- */
-.folder-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
-@media (min-width:420px){ .folder-grid{ grid-template-columns:1fr 1fr; } }
-.folder{
-  background:rgba(61,255,122,0.05);
-  border:1px solid var(--green-dim);
-  border-radius:8px;
-  padding:16px 10px;
-  text-align:center;
-  cursor:pointer;
-  font-size:0.78rem;
-  transition:background 0.2s ease, border-color 0.2s ease;
-}
-.folder .ic{ font-size:1.6rem; display:block; margin-bottom:6px; }
-.folder:active{ transform:scale(0.97); }
-.folder.opened{ border-color:var(--cyan); color:var(--cyan); }
-
-/* ---------- command bar ---------- */
-#command-bar{
-  flex-shrink:0;
-  display:flex; align-items:center; gap:8px;
-  border-top:1px solid var(--green-dim);
-  background:rgba(0,0,0,0.45);
-  padding:10px 12px;
-  opacity:0; max-height:0; overflow:hidden;
-  transition:opacity 0.4s ease, max-height 0.4s ease, padding 0.4s ease;
-}
-#command-bar.visible{ opacity:1; max-height:60px; padding:10px 12px; }
-#command-bar .prefix{ color:var(--green-dim); font-size:0.85rem; white-space:nowrap; }
-#command-input{
-  flex:1; background:transparent; border:none; color:var(--green);
-  font-family:var(--mono); font-size:0.85rem; outline:none;
-}
-
-/* ---------- toast ---------- */
-#toast-layer{ position:fixed; inset:0; z-index:60; pointer-events:none; }
-.toast{
-  position:absolute; left:50%; top:16%;
-  transform:translate(-50%,-10px);
-  background:rgba(10,14,11,0.9);
-  border:1px solid var(--cyan);
-  color:var(--cyan);
-  padding:10px 18px; border-radius:8px;
-  font-size:0.85rem;
-  box-shadow:0 0 24px rgba(107,240,230,0.25);
-  opacity:0;
-  transition:opacity 0.35s ease, transform 0.35s ease;
-  white-space:nowrap;
-}
-.toast.show{ opacity:1; transform:translate(-50%,0); }
-
-/* ---------- puzzle: heart shards ---------- */
-.puzzle-wrap{ position:relative; height:280px; margin-top:14px; border:1px dashed var(--green-dim); border-radius:10px; overflow:hidden; }
-.puzzle-target{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  font-size:64px; opacity:0.18; filter:grayscale(1);
-  transition:opacity 0.4s ease, filter 0.4s ease, transform 0.4s ease;
-  user-select:none;
-}
-.puzzle-target.filled{ opacity:1; filter:none; transform:translate(-50%,-50%) scale(1.15); }
-.shard{
-  position:absolute; font-size:30px; cursor:grab;
-  touch-action:none; user-select:none;
-  filter:drop-shadow(0 0 6px rgba(255,75,110,0.4));
-  transition:filter 0.2s ease;
-}
-.shard.placed{ opacity:0; pointer-events:none; }
-.puzzle-status{ text-align:center; font-size:0.8rem; color:var(--green-dim); margin-top:8px; }
-
-/* ---------- memory match ---------- */
-.mem-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:16px; }
-.mem-card{
-  aspect-ratio:1/1.15;
-  background:rgba(61,255,122,0.06);
-  border:1px solid var(--green-dim);
-  border-radius:7px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.3rem;
-  cursor:pointer;
-  position:relative;
-  perspective:600px;
-}
-.mem-inner{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; transition:transform 0.4s ease; transform-style:preserve-3d; }
-.mem-card.flipped .mem-inner, .mem-card.matched .mem-inner{ transform:rotateY(180deg); }
-.mem-face{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; backface-visibility:hidden; border-radius:6px; }
-.mem-back{ color:var(--green-dim); font-size:1rem; }
-.mem-front{ transform:rotateY(180deg); }
-.mem-card.matched{ border-color:var(--cyan); opacity:0.85; }
-
-/* ---------- range / blur photo ---------- */
-.photo-frame{
-  margin-top:14px; height:200px; border-radius:10px; overflow:hidden;
-  border:1px solid var(--green-dim);
-  display:flex; align-items:center; justify-content:center;
-  background:radial-gradient(circle at 40% 30%, #241033, #0c0410 70%);
-  position:relative;
-}
-.photo-svg{ transition:filter 0.15s ease; filter:blur(18px); }
-.range-input{ width:100%; margin-top:14px; accent-color:var(--cyan); }
-
-/* ---------- progress / scan bars ---------- */
-.scan-row{ margin-top:14px; }
-.scan-label{ display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px; }
-.scan-track{ height:9px; background:rgba(61,255,122,0.08); border:1px solid var(--green-dim); border-radius:5px; overflow:hidden; }
-.scan-fill{ height:100%; background:linear-gradient(90deg,var(--green-dim),var(--green)); width:0%; transition:width 1.1s cubic-bezier(.2,.7,.3,1); box-shadow:0 0 8px var(--green-glow); }
-.scan-fill.overflow{ background:linear-gradient(90deg,var(--amber),var(--red)); }
-.scan-fill.frozen{ background:repeating-linear-gradient(45deg,var(--red),var(--red) 6px, #7a1414 6px,#7a1414 12px); }
-
-/* ---------- ownership / crown ---------- */
-.crown-wrap{ text-align:center; margin-top:18px; font-size:2.4rem; animation:floatUp 2.4s ease-in-out infinite; }
-@keyframes floatUp{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-8px);} }
-
-/* ---------- final letter scene ---------- */
-#letter-scene{
-  position:fixed; inset:0; z-index:30;
-  background: radial-gradient(ellipse at 50% 20%, var(--plum3) 0%, var(--plum2) 45%, var(--plum1) 100%);
-  display:flex; align-items:flex-start; justify-content:center;
-  padding:0; opacity:0; pointer-events:none;
-  transition:opacity 1.4s ease;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-}
-#letter-scene.show{ opacity:1; pointer-events:auto; }
-.petal-layer{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
-.petal{ position:absolute; top:-5%; font-size:1.1rem; opacity:0.55; animation:fall linear infinite; }
-@keyframes fall{ to{ transform:translateY(115vh) rotate(360deg); } }
-.letter-wrap{
-  position:relative; z-index:2;
-  max-width:560px; width:100%;
-  margin:0 auto;
-  padding:56px 26px 90px;
-  font-family:var(--serif);
-  color:var(--paper);
-}
-.letter-wrap h2{
-  font-weight:500; font-style:italic; font-size:clamp(1.3rem,5vw,1.7rem);
-  color:var(--gold); text-align:center; margin:0 0 30px;
-  letter-spacing:0.02em;
-}
-.letter-line{ font-size:clamp(1.05rem,4.4vw,1.28rem); line-height:1.85; margin:0 0 14px; text-shadow:none; color:var(--paper); }
-.letter-line.sign{ text-align:right; font-style:italic; color:var(--gold); margin-top:26px; }
-.letter-cursor{ display:inline-block; width:0.4em; height:1em; background:var(--gold); vertical-align:text-bottom; animation:blink 0.9s steps(1) infinite; }
-
-.status-box{
-  margin-top:40px; border:1px solid rgba(232,192,125,0.4); border-radius:10px;
-  padding:18px 20px; background:rgba(0,0,0,0.2);
-  font-family:var(--mono); font-size:0.82rem; color:var(--gold); line-height:2;
-}
-.status-box .k{ color:rgba(251,243,231,0.6); }
-
-.letter-continue{
-  display:block; margin:34px auto 0; font-family:var(--serif); font-style:italic;
-  background:transparent; border:1px solid var(--gold); color:var(--gold);
-  padding:10px 22px; border-radius:20px; font-size:1rem; cursor:pointer;
-  opacity:0; transition:opacity 1s ease;
-}
-.letter-continue.show{ opacity:1; }
-
-/* ---------- notification banner (secret ending) ---------- */
-.notif{
-  position:fixed; left:50%; top:8%; transform:translate(-50%,-140%);
-  width:88%; max-width:380px;
-  background:rgba(15,18,16,0.92); border:1px solid var(--cyan);
-  border-radius:14px; padding:14px 16px; z-index:70;
-  box-shadow:0 10px 40px rgba(0,0,0,0.6), 0 0 20px rgba(107,240,230,0.2);
-  transition:transform 0.6s cubic-bezier(.17,.89,.32,1.28);
-  cursor:pointer;
-}
-.notif.show{ transform:translate(-50%,0); }
-.notif-title{ font-size:0.72rem; color:var(--cyan); letter-spacing:0.05em; margin-bottom:4px; }
-.notif-body{ font-size:0.86rem; color:var(--green-soft); }
-
-/* ---------- mute + fullscreen fade ---------- */
+/* ---------------- mute ---------------- */
 #mute-btn{
-  position:fixed; top:max(10px,env(safe-area-inset-top)); right:10px; z-index:55;
-  background:rgba(0,0,0,0.5); border:1px solid var(--green-dim); color:var(--green-dim);
-  border-radius:20px; padding:6px 12px; font-family:var(--mono); font-size:0.72rem; cursor:pointer;
+  position:fixed; top:max(12px,env(safe-area-inset-top)); right:12px; z-index:55;
+  background:rgba(20,10,30,0.4); border:1px solid rgba(255,255,255,0.25); color:var(--dawn4);
+  border-radius:20px; padding:6px 12px; font-family:var(--body-font); font-size:0.85rem; cursor:pointer;
+  backdrop-filter:blur(6px);
 }
-#screen-fade{
-  position:fixed; inset:0; background:#000; z-index:80; opacity:0; pointer-events:none; transition:opacity 1.1s ease;
+
+/* ---------------- vine ---------------- */
+#vine-track{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:3px; height:100%; z-index:2;
+  background:rgba(255,255,255,0.08);
+  border-radius:3px;
 }
-#screen-fade.show{ opacity:1; pointer-events:auto; }
+#vine-fill{
+  width:100%; height:0%;
+  background:linear-gradient(180deg, var(--sage), var(--sage-dark));
+  border-radius:3px;
+  box-shadow:0 0 10px rgba(143,174,134,0.5);
+  transition:height 0.15s linear;
+}
 
-.center-emoji{ text-align:center; font-size:2.4rem; margin:14px 0; }
-.small{ font-size:0.78rem; }
-.italic{ font-style:italic; }
+/* ---------------- story ---------------- */
+main{ position:relative; z-index:3; padding:0 20px; }
+.spacer-top{ height:100vh; }
+.stop{
+  max-width:520px; margin:0 auto; padding:70px 6px;
+  opacity:0; transform:translateY(26px);
+  transition:opacity 1s ease, transform 1s ease;
+  text-align:center;
+}
+.stop.in-view{ opacity:1; transform:translateY(0); }
+.stop .eyebrow{ font-family:var(--script); font-size:1.5rem; color:var(--rose); margin-bottom:6px; }
+.stop h2{
+  font-family:var(--display); font-weight:600; font-style:italic;
+  font-size:clamp(1.4rem,5.5vw,2rem); margin:0 0 16px; color:var(--cream);
+  line-height:1.3;
+}
+.stop p{
+  font-size:clamp(1.05rem,4vw,1.25rem); line-height:1.8; color:var(--dawn4);
+  margin:0 0 14px;
+}
+.stop p.typed{ opacity:0; transition:opacity 0.4s ease; }
+.stop h2.typed{ opacity:0; transition:opacity 0.4s ease; }
+.stop.on-dawn h2{ color:var(--ink); }
+.stop.on-dawn p{ color:var(--ink-soft); }
+.stop.on-dawn .eyebrow{ color:var(--rose-deep); }
 
-#replay-wrap{ text-align:center; padding:26px 0 10px; opacity:0; transition:opacity 1.5s ease; }
-#replay-wrap.show{ opacity:1; }
+/* seed packet card */
+.packet{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:16px;
+  padding:26px 22px;
+  margin-top:18px;
+  text-align:left;
+}
+.stop.on-dawn .packet{ background:rgba(255,255,255,0.55); border-color:rgba(180,120,90,0.25); }
+.packet-title{ font-family:var(--display); font-style:italic; font-size:1.05rem; margin-bottom:14px; color:var(--dawn3); }
+.stop.on-dawn .packet-title{ color:var(--rose-deep); }
+.packet ul{ margin:0; padding-left:20px; }
+.packet li{ font-size:1.1rem; line-height:1.9; }
+
+/* bouquet */
+.bouquet{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:22px; }
+.bud{
+  background:none; border:none; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  width:126px; padding:6px;
+}
+.bud-icon{
+  font-size:2rem; display:inline-block;
+  filter:grayscale(0.6) opacity(0.7);
+  transform:scale(0.85) rotate(0deg);
+  transition:transform 0.5s cubic-bezier(.2,1.4,.4,1), filter 0.5s ease;
+}
+.bud.bloomed .bud-icon{
+  filter:grayscale(0) opacity(1) drop-shadow(0 0 8px rgba(217,164,92,0.5));
+  transform:scale(1.15) rotate(-6deg);
+}
+.bud-caption{
+  font-size:0.85rem; line-height:1.4; color:var(--dawn4);
+  max-height:0; opacity:0; overflow:hidden;
+  transition:max-height 0.5s ease, opacity 0.5s ease;
+}
+.stop.on-dawn .bud-caption{ color:var(--ink-soft); }
+.bud.bloomed .bud-caption{ max-height:190px; opacity:1; }
+.bud-hint{ font-size:0.75rem; color:rgba(255,255,255,0.4); margin-top:4px; }
+.stop.on-dawn .bud-hint{ color:rgba(58,36,64,0.4); }
+
+/* closing */
+.closing .eyebrow{ font-size:1.8rem; }
+.signature{
+  font-family:var(--script); font-size:2.2rem; color:var(--rose-deep);
+  margin-top:22px;
+}
+.closing-final{
+  font-size:1rem; color:var(--ink-soft); margin-top:26px; font-style:italic;
+}
+.end-mark{ text-align:center; padding:40px 0 90px; font-size:1.05rem; color:var(--ink-soft); }
+.end-mark a{ color:var(--rose-deep); text-decoration:none; border-bottom:1px dotted var(--rose-deep); }
+
+.gap{ height:8px; }
 </style>
 </head>
 <body>
 
-<canvas id="matrix-bg"></canvas>
-<div id="vignette"></div>
-<div id="screen-fade"></div>
+<canvas id="fireflies"></canvas>
 
-<div id="start-screen">
-  <div class="start-title">DAVEOS</div>
-  <div class="start-sub">A private system. Encrypted. Waiting for one specific person.<br><br>Tap to power on.</div>
-  <button class="start-btn" id="power-btn">[ POWER ON ]<span class="blinking-caret">_</span></button>
+<div id="hero">
+  <div class="hero-seed">🌱</div>
+  <div class="hero-eyebrow">for Phoebe</div>
+  <div class="hero-title">Plant something with me?</div>
+  <div class="hero-sub">no occasion. just us.</div>
+  <button class="hero-btn" id="begin-btn">[ begin ]</button>
 </div>
 
 <button id="mute-btn">🔊 sound</button>
 
-<div id="app">
-  <div id="terminal-window">
-    <div class="topbar">
-      <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
-      <div class="topbar-title" id="topbar-title">root@heart:~$ ./daveos --edition=girlfriend-day</div>
-      <div style="width:40px"></div>
-    </div>
-    <div id="terminal-body"></div>
-    <div id="command-bar">
-      <span class="prefix">root@heart:~$</span>
-      <input id="command-input" class="text-input" style="margin:0;border:none;padding:0;background:transparent" placeholder="type a hidden command..." autocomplete="off" autocapitalize="off" spellcheck="false">
-    </div>
+<div id="vine-track"><div id="vine-fill"></div></div>
+
+<main>
+<div class="spacer-top"></div>
+
+<section class="stop">
+  <div class="eyebrow">no holiday today</div>
+  <h2>You already know pieces of this.</h2>
+  <p>I've said parts of it before — late at night, typed too fast, longer than any message should be. This time I wanted to say it slower.</p>
+  <p>So instead of something you scroll past in ten seconds, I built you somewhere to actually walk through it. Take your time. It took me a while too.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">before anything else</div>
+  <h2>It started smaller than this.</h2>
+  <p>No fireworks, if I'm honest. Just a conversation that didn't end when it should have, and then didn't end the next day either.</p>
+  <p>I didn't plant this on purpose. I just kept showing up, and somewhere in there it turned into something I couldn't uproot even if I tried.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">right now</div>
+  <h2>You have about 100% of me.</h2>
+  <p>Not the metaphor version. The actual, slightly embarrassing, can't-finish-a-sentence-without-you version.</p>
+  <p>I'll be in the middle of something completely unrelated — studying, fixing code, just walking somewhere — and somehow it circles back to you. Every time.</p>
+  <p>Ask anyone who's tried to have a real conversation with me lately. Half of it is you, whether I say your name out loud or not.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the first spark</div>
+  <h2>The moment I stopped calling it casual.</h2>
+  <p>There was a version of me that tried to keep this small. Low stakes. Easy to walk back from if it needed to be.</p>
+  <p>That version lost pretty quickly. I remember exactly where I was when I admitted, just to myself, that I wasn't going anywhere.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">what I'm sure of</div>
+  <h2>I don't really lose things I commit to.</h2>
+  <p>I've never actually had a failed project — only ones I chose to walk away from. And I'm not walking away from this. Not now, not when it's hard, not ever. That part was never up for negotiation.</p>
+  <p>Same rule applies here as everywhere else. I looked at us and decided, a long time ago, that this wasn't the kind of thing I quit.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the way you love</div>
+  <h2>You make ordinary things feel like enough.</h2>
+  <p>You have this way of remembering the small thing I mentioned once, weeks ago, like it mattered. It did. You just noticed before I said so.</p>
+  <p>You're patient with the version of me that's still figuring things out. Not the polished one. The actual one.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the hard part</div>
+  <h2>I know some seasons feel far apart.</h2>
+  <p>School. Distance. The version of us that only exists through a screen sometimes. I won't pretend that doesn't sting.</p>
+  <p>But it doesn't last forever — and even your mum will loosen the reins a little more every year, the way parents do. Time is actually on our side here, even on the days it doesn't feel like it.</p>
+  <p>So I do the boring, unglamorous things instead — the call before you sleep, the message that says nothing except that I'm thinking of you. Small deposits. They add up.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the quiet nights</div>
+  <h2>The version of missing you nobody sees.</h2>
+  <p>There are nights the room just feels a little too quiet, and I know exactly why. I don't always say it. Some nights I just sit with it.</p>
+  <p>I've gotten better at treating the distance like a season instead of a sentence. It's temporary. You're not.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">what keeps me steady</div>
+  <h2>Small promises, kept on purpose.</h2>
+  <p>It's not the big declarations that hold this together. It's the small stuff — answering when I say I will, showing up when it's inconvenient, choosing honesty over the easy lie.</p>
+  <p>Every one of those is a root. You don't see roots. You just notice that the thing doesn't fall over.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the years ahead</div>
+  <h2>Somewhere down the line, I want to look back at a day like this.</h2>
+  <p>A few years from now — still figuring things out, still choosing each other on purpose.</p>
+  <p>Ten years from now — further along, further sure, still ridiculous about you.</p>
+  <p>And whenever we're finally old and slow about everything — I still want to be the one making you laugh at something dumb I said.</p>
+  <p>I'm not in a rush to skip to any of it. I just like knowing it's there, waiting, already decided.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the ordinary days</div>
+  <h2>I don't need the good days. I need the normal ones.</h2>
+  <p>Anyone can be devoted on the days that are easy. I want the version where it's just Tuesday, nothing's happening, and I still choose you out of habit.</p>
+  <p>The laundry days. The tired days. The days with nothing to post about. Especially those.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the plan</div>
+  <h2>Here's my actual plan, if you want to know it.</h2>
+  <div class="packet">
+    <div class="packet-title">Instructions for growing something real —</div>
+    <ul>
+      <li>master everything I'm building</li>
+      <li>become the best version of myself</li>
+      <li>build my own money instead of waiting for someone to hand me a job</li>
+      <li>protect the peace between us, even when the world outside gets loud</li>
+      <li>come back to you first, no matter what the day pulled me into</li>
+      <li>spend the rest of my life with you</li>
+    </ul>
   </div>
-</div>
+  <p style="margin-top:18px">Not a dream anymore. A route. A to Z, already mapped, in permanent marker.</p>
+</section>
 
-<div id="letter-scene">
-  <div class="petal-layer" id="petal-layer"></div>
-  <div class="letter-wrap" id="letter-wrap"></div>
-</div>
+<section class="stop">
+  <div class="eyebrow">if I'm honest</div>
+  <h2>I don't have this all figured out.</h2>
+  <p>Some days I worry I won't be enough of what you need. I'm telling you that instead of hiding it, because I'd rather you know the real version.</p>
+  <p>But not being finished isn't the same as not being sure. I'm still building myself into someone worth all this planning. That part I promise.</p>
+</section>
 
-<div id="toast-layer"></div>
-<audio id="bg-song" preload="none" loop src="song.mp3"></audio>
+<section class="stop">
+  <div class="eyebrow">why you, specifically</div>
+  <h2>Not because you're perfect. Because of how you make ordinary things feel safe.</h2>
+  <p>You're patient with me on the days I don't really deserve it. You make me want to become someone worth all this planning.</p>
+  <p>I've watched how you treat people who can't do anything for you. That told me everything I needed to know.</p>
+  <p>There's a line I keep coming back to — that good women actually exist, not just in theory. You're the reason I believe that now.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the garden we're growing</div>
+  <h2>Look how far this has already come.</h2>
+  <p>This isn't a plan for someday anymore. Some of it already grew — the trust, the way we fight fair, the way you're the first call on both the good news and the bad.</p>
+  <p>I just want to keep tending it. Water it on the boring days, not only the pretty ones.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">what I want to give you</div>
+  <h2>Here's what I'm actually offering.</h2>
+  <p>Not perfect. Not always right. But steady. Honest, even when it's inconvenient. Someone in your corner before I'm anywhere else's.</p>
+  <p>Laughter on the hard days. Protection you never have to ask for. A hand that doesn't let go first.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">once it's all done</div>
+  <h2>This is what's waiting on the other side.</h2>
+  <p style="opacity:0.85; font-size:0.95rem">tap each one</p>
+  <div class="bouquet" id="bouquet"></div>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">just so you know</div>
+  <h2>This wasn't for an anniversary. There isn't one today.</h2>
+  <p>I just woke up thinking about you, the way I usually do, and this time I decided to actually build something instead of just telling you.</p>
+</section>
+
+<section class="stop stop-vow">
+  <div class="eyebrow">before the actual one</div>
+  <h2>Here's the closest thing I have to a vow, for now.</h2>
+  <p class="typed">I promise to keep choosing you on the ordinary days, not just the easy ones.</p>
+  <p class="typed">I promise to say the hard, honest thing instead of the easy comfortable one, even when it costs me something.</p>
+  <p class="typed">I promise the plan I showed you isn't a fantasy. It's a route, and you're the destination on every version of it.</p>
+  <p class="typed">I promise to keep showing up long after the newness wears off, because that's the part that actually counts.</p>
+  <p class="typed">And I promise that whatever this page says today, I'll still mean it in seven years, and every year after that.</p>
+</section>
+
+<section class="stop closing stop-closing">
+  <div class="eyebrow">the truth</div>
+  <h2 class="typed">I love you, momma.</h2>
+  <p>You did a really good job hacking your way into my heart.</p>
+  <p>I'm not changing the password. Full access. Permanently granted.</p>
+  <p>No firewall, no backup admin, no one else with root access. Just you.</p>
+  <p>And if it's ever forgotten — the security answer was always just us.</p>
+  <p class="typed">If you're crying right now… good. That was kind of the whole point.</p>
+  <div class="signature">Forever yours, Dave 🌷</div>
+  <div class="closing-final">I didn't build this for a date on a calendar. I built it because it's just another day, and I still can't stop thinking about you. That's the whole occasion.</div>
+</section>
+
+<div class="end-mark">🌷 grown, not scheduled. <br><a href="#top" id="replay-link">back to the beginning</a></div>
+</main>
+
+<audio id="song" preload="none" loop src="song3.mp3"></audio>
 
 <script>
-/* ============================================================
-   DaveOS — Girlfriend Day Edition
-   ============================================================ */
-
-/* ---------------- state ---------------- */
-const state = {
-  muted:false,
-  audioCtx:null,
-  name:'',
-  foldersOpened:0,
-  commandsUnlocked:false,
-  photoViews:1204,
-  ambientNodes:null
-};
-
-/* ---------------- basic helpers ---------------- */
-const termBody = document.getElementById('terminal-body');
-function sleep(ms){ return new Promise(res=>setTimeout(res,ms)); }
-function makeButton(label, cls){ const b=document.createElement('button'); b.className=cls||'btn primary'; b.textContent=label; return b; }
-function wrapCenter(node){ const d=document.createElement('div'); d.style.textAlign='center'; d.style.marginTop='16px'; d.appendChild(node); return d; }
-function addRaw(node){ termBody.appendChild(node); termBody.scrollTop = termBody.scrollHeight; return node; }
-function addGap(big){ const d=document.createElement('div'); d.className= big?'gap-lg':'gap'; termBody.appendChild(d); }
-function waitForClick(node){
-  return new Promise(resolve=>{
-    function h(){ node.removeEventListener('click',h); resolve(); }
-    node.addEventListener('click', h);
-  });
-}
-function waitForEither(a,b){
-  return new Promise(resolve=>{
-    function ha(){ cleanup(); resolve('a'); }
-    function hb(){ cleanup(); resolve('b'); }
-    function cleanup(){ a.removeEventListener('click',ha); b.removeEventListener('click',hb); }
-    a.addEventListener('click',ha); b.addEventListener('click',hb);
-  });
-}
-function makeTextPrompt(placeholder, label){
-  const wrap=document.createElement('div');
-  const input=document.createElement('input');
-  input.className='text-input'; input.placeholder=placeholder; input.autocomplete='off';
-  input.autocapitalize='off'; input.spellcheck=false;
-  const btn=makeButton(label||'[ Submit ]'); btn.style.marginTop='10px';
-  wrap.appendChild(input); wrap.appendChild(document.createElement('br')); wrap.appendChild(btn);
-  addRaw(wrap);
-  return {input,btn,wrap};
-}
-async function clearScene(){
-  termBody.style.transition='opacity 0.35s ease';
-  termBody.style.opacity='0';
-  await sleep(380);
-  termBody.innerHTML='';
-  termBody.style.opacity='1';
-}
-async function blackTransition(darkMs){
-  const fade=document.getElementById('screen-fade');
-  fade.classList.add('show');
-  await sleep(1100);
-  await sleep(darkMs||900);
-}
-async function unblack(){
-  const fade=document.getElementById('screen-fade');
-  fade.classList.remove('show');
-  await sleep(1100);
-}
-
-/* ---------------- typewriter ---------------- */
-let skipRequested = false;
-termBody.addEventListener('click', ()=>{ skipRequested = true; });
-
-function typeLine(text, opts){
-  opts = opts || {};
-  const cls = opts.cls || '';
-  const speed = opts.speed || 22;
-  const container = opts.container || termBody;
-  const cursorCls = opts.cursorCls || 'cursor';
-  const noSkip = !!opts.noSkip;
-  const doTick = opts.tick !== false;
-  return new Promise(resolve=>{
-    const p = document.createElement('div');
-    p.className = ('line ' + cls + ' enter').trim().replace(/\s+/g,' ');
-    const textNode = document.createElement('span');
-    const cursor = document.createElement('span'); cursor.className = cursorCls;
-    p.appendChild(textNode); p.appendChild(cursor);
-    container.appendChild(p);
-    container.scrollTop = container.scrollHeight;
-    let i = 0;
-    function step(){
-      if(!noSkip && skipRequested){
-        textNode.textContent = text;
-        cursor.remove();
-        skipRequested = false;
-        container.scrollTop = container.scrollHeight;
-        resolve();
-        return;
-      }
-      if(i < text.length){
-        textNode.textContent += text[i];
-        i++;
-        if(doTick && i % 2 === 0) tick();
-        container.scrollTop = container.scrollHeight;
-        setTimeout(step, speed + Math.random()*14);
-      } else {
-        cursor.remove();
-        resolve();
-      }
-    }
-    step();
-  });
-}
-
-/* ---------------- audio ---------------- */
-function ensureAudio(){
-  if(!state.audioCtx){
-    try{ state.audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
-  }
-  if(state.audioCtx && state.audioCtx.state === 'suspended'){ state.audioCtx.resume(); }
-}
-function beep(freq, dur, type, vol, delay){
-  if(state.muted || !state.audioCtx) return;
-  const ctx = state.audioCtx;
-  const t0 = ctx.currentTime + (delay||0);
-  const osc = ctx.createOscillator(); const gain = ctx.createGain();
-  osc.type = type||'sine'; osc.frequency.setValueAtTime(freq, t0);
-  gain.gain.setValueAtTime(0, t0);
-  gain.gain.linearRampToValueAtTime(vol||0.05, t0+0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0+(dur||0.1));
-  osc.connect(gain); gain.connect(ctx.destination);
-  osc.start(t0); osc.stop(t0+(dur||0.1)+0.02);
-}
-function tick(){ beep(1700+Math.random()*500, 0.02, 'square', 0.018); }
-function bootTone(){ beep(220,0.15,'sine',0.06); beep(440,0.15,'sine',0.05,0.12); }
-function successTone(){ beep(523,0.09,'sine',0.06); beep(659,0.09,'sine',0.06,0.09); beep(784,0.14,'sine',0.06,0.18); }
-function errorTone(){ beep(160,0.25,'sawtooth',0.06); beep(110,0.3,'sawtooth',0.05,0.08); }
-function chimeTone(){ beep(880,0.2,'sine',0.05); beep(1108,0.25,'sine',0.045,0.12); }
-
-function startAmbient(){
-  if(state.muted || !state.audioCtx) return;
-  const ctx = state.audioCtx;
-  const notes = [261.63,329.63,392.00,523.25];
-  const master = ctx.createGain();
-  master.gain.setValueAtTime(0, ctx.currentTime);
-  master.gain.linearRampToValueAtTime(0.03, ctx.currentTime+3);
-  master.connect(ctx.destination);
-  const oscs = notes.map(f=>{
-    const o = ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
-    o.connect(master); o.start(); return o;
-  });
-  state.ambientNodes = {master, oscs};
-}
-function stopAmbient(){
-  if(!state.ambientNodes || !state.audioCtx) return;
-  const {master, oscs} = state.ambientNodes;
-  const ctx = state.audioCtx;
-  master.gain.linearRampToValueAtTime(0, ctx.currentTime+1.2);
-  setTimeout(()=>{ oscs.forEach(o=>{ try{o.stop();}catch(e){} }); }, 1400);
-  state.ambientNodes = null;
-}
-
-/* ---------------- background song ---------------- */
-const bgSong = document.getElementById('bg-song');
-let songUnlocked = false;
-let songFadeIv = null;
-
-/* Called directly inside the click handler of the last button before the
-   letter scene. This is a real, fresh user gesture, so browsers allow the
-   play() call. Starting play() at volume 0 forces the browser to begin
-   fetching song.mp3 immediately. */
-function beginSongLoad(){
-  if(songUnlocked) return;
-  songUnlocked = true;
-  bgSong.volume = 0;
-  bgSong.load();
-  const p = bgSong.play();
-  if(p && p.catch) p.catch(()=>{});
-}
-
-/* Waits until the song has buffered enough to play smoothly, or gives up
-   after maxMs so the experience never hangs on a slow connection. */
-function waitForAudioReady(maxMs){
-  return new Promise(resolve=>{
-    if(bgSong.readyState >= 3){ resolve(); return; }
-    let done = false;
-    function finish(){
-      if(done) return; done = true;
-      bgSong.removeEventListener('canplaythrough', finish);
-      bgSong.removeEventListener('canplay', finish);
-      resolve();
-    }
-    bgSong.addEventListener('canplaythrough', finish);
-    bgSong.addEventListener('canplay', finish);
-    setTimeout(finish, maxMs || 6000);
-  });
-}
-
-function fadeSongIn(target, dur){
-  if(songFadeIv) clearInterval(songFadeIv);
-  if(state.muted) return;
-  bgSong.currentTime = 0;
-  if(bgSong.paused){
-    const p = bgSong.play();
-    if(p && p.catch) p.catch(()=>{});
-  }
-  const steps = 30; let i = 0;
-  songFadeIv = setInterval(()=>{
-    i++;
-    bgSong.volume = Math.min(target, (target*i/steps));
-    if(i >= steps) clearInterval(songFadeIv);
-  }, (dur||2500)/steps);
-}
-function fadeSongOut(dur){
-  if(songFadeIv) clearInterval(songFadeIv);
-  const startVol = bgSong.volume;
-  const steps = 20; let i = 0;
-  songFadeIv = setInterval(()=>{
-    i++;
-    bgSong.volume = Math.max(0, startVol*(1-i/steps));
-    if(i >= steps){ clearInterval(songFadeIv); bgSong.pause(); }
-  }, (dur||1200)/steps);
-}
-
-/* ---------------- matrix rain background ---------------- */
+/* ---------------- fireflies ---------------- */
 (function(){
-  const canvas = document.getElementById('matrix-bg');
+  const canvas = document.getElementById('fireflies');
   const ctx = canvas.getContext('2d');
-  const chars = "01アイウエオカキクケコサシスセソ<>{}[]/;:";
-  let drops = [];
+  let particles = [];
   function resize(){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const cols = Math.max(1, Math.floor(canvas.width/16));
-    drops = new Array(cols).fill(0).map(()=> Math.random()*-100);
+    const count = Math.min(46, Math.floor((canvas.width*canvas.height)/26000));
+    particles = new Array(count).fill(0).map(()=>({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: 1 + Math.random()*1.8,
+      vy: -(0.15 + Math.random()*0.35),
+      vx: (Math.random()-0.5)*0.2,
+      phase: Math.random()*Math.PI*2
+    }));
   }
   window.addEventListener('resize', resize);
   resize();
+  let t = 0;
   function draw(){
-    ctx.fillStyle = 'rgba(5,5,5,0.09)';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = '#3dff7a';
-    ctx.font = '14px monospace';
-    for(let i=0;i<drops.length;i++){
-      const t = chars[Math.floor(Math.random()*chars.length)];
-      ctx.fillText(t, i*16, drops[i]*16);
-      if(drops[i]*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i]++;
-    }
+    t += 0.02;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.y += p.vy; p.x += p.vx;
+      if(p.y < -10){ p.y = canvas.height+10; p.x = Math.random()*canvas.width; }
+      const glow = 0.4 + 0.6*Math.abs(Math.sin(t+p.phase));
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(217,164,92,'+(glow*0.85)+')';
+      ctx.shadowColor = 'rgba(217,164,92,0.8)';
+      ctx.shadowBlur = 8;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
 })();
 
-/* ---------------- toast ---------------- */
-function showToast(msg, duration){
-  const layer = document.getElementById('toast-layer');
-  const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
-  layer.appendChild(t);
-  requestAnimationFrame(()=>t.classList.add('show'));
-  chimeTone();
-  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),400); }, duration||2600);
+/* ---------------- vine growth on scroll ---------------- */
+const vineFill = document.getElementById('vine-fill');
+let ticking = false;
+function updateVine(){
+  const doc = document.documentElement;
+  const scrollable = doc.scrollHeight - window.innerHeight;
+  const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY/scrollable)) : 0;
+  vineFill.style.height = (progress*100)+'%';
+  ticking = false;
 }
+window.addEventListener('scroll', ()=>{
+  if(!ticking){ requestAnimationFrame(updateVine); ticking = true; }
+}, {passive:true});
+updateVine();
 
-/* ---------------- modal ---------------- */
-function openModal(title, lines){
-  return new Promise(resolve=>{
-    const overlay=document.createElement('div'); overlay.className='modal-overlay';
-    const card=document.createElement('div'); card.className='modal-card';
-    const t=document.createElement('div'); t.className='modal-title'; t.textContent=title;
-    const b=document.createElement('div'); b.className='modal-body';
-    lines.forEach(l=>{ const p=document.createElement('div'); p.textContent=l; p.style.marginBottom='8px'; b.appendChild(p); });
-    const close=makeButton('[ Close ]','btn ghost modal-close');
-    card.appendChild(t); card.appendChild(b); card.appendChild(close);
-    overlay.appendChild(card);
-    document.body.appendChild(overlay);
-    requestAnimationFrame(()=>overlay.classList.add('show'));
-    close.addEventListener('click', ()=>{
-      overlay.classList.remove('show');
-      setTimeout(()=>{ overlay.remove(); resolve(); }, 320);
-    });
+/* ---------------- scroll reveals ---------------- */
+const stops = document.querySelectorAll('.stop');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('in-view');
   });
-}
+}, {threshold:0.25});
+stops.forEach(s=>io.observe(s));
 
-/* ---------------- command bar / hidden keyboard ---------------- */
-function showCommandBar(){
-  document.getElementById('command-bar').classList.add('visible');
-  state.commandsUnlocked = true;
-}
-function hideCommandBar(){
-  document.getElementById('command-bar').classList.remove('visible');
-}
-function handleCommand(v){
-  if(!state.commandsUnlocked || !v) return;
-  if(v === 'k'){ showToast('💋 virtual kiss sent.'); }
-  else if(v === 'h'){ showToast('🤗 virtual hug sent.'); }
-  else if(v === 'p'){ state.photoViews++; showToast('📸 photo view counter: '+state.photoViews); }
-  else if(v === 'd'){ showToast('// dev note: still figuring out how one person got this important'); }
-  else if(v === 'l'){ showToast('📊 love stats — compliments queued: ∞'); }
-  else { showToast('command not recognized: '+v); }
-}
-document.getElementById('command-input').addEventListener('keydown', e=>{
-  if(e.key === 'Enter'){
-    const v = e.target.value.trim().toLowerCase();
-    e.target.value = '';
-    handleCommand(v);
+/* mark the last two stops as "on dawn" background for readable dark text */
+const dawnStops = Array.from(stops).slice(-2);
+dawnStops.forEach(s=>s.classList.add('on-dawn'));
+
+/* ---------------- slow typewriter for the vow + closing ---------------- */
+function typeParagraph(el, delay){
+  const text = el.textContent;
+  el.textContent = '';
+  let i = 0;
+  function step(){
+    if(i < text.length){
+      el.textContent += text[i];
+      i++;
+      setTimeout(step, 30 + Math.random()*22);
+    }
   }
+  setTimeout(()=>{ el.style.opacity = '1'; step(); }, delay || 0);
+}
+const typedObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting && !e.target.dataset.typed){
+      e.target.dataset.typed = '1';
+      const els = e.target.querySelectorAll('.typed');
+      els.forEach((el,idx)=>{ typeParagraph(el, idx*700); });
+    }
+  });
+}, {threshold:0.5});
+document.querySelectorAll('.stop-vow, .stop-closing').forEach(s=>typedObserver.observe(s));
+
+/* ---------------- bouquet ---------------- */
+const bouquetData = [
+  {icon:"🌹", text:"your bride price. paid, eventually, and gladly — because you're worth doing this properly."},
+  {icon:"💍", text:"my wife. one day, officially, in front of everyone who ever doubted us."},
+  {icon:"🚗", text:"my passenger princess. the one I pull up for, no notice needed."},
+  {icon:"🔐", text:"the one who gets my phone password and my ATM pin. no locked doors between us."},
+  {icon:"🤕", text:"the one I'll prank about getting hit by a car, just to watch you panic for two seconds before I laugh. 😂"},
+  {icon:"🍳", text:"the one I'll make genuinely bad breakfast in bed for, because the effort matters more than the eggs. 😂"},
+  {icon:"🌅", text:"the one I want waking up next to me, for a very long time. not just the good mornings — all of them."},
+  {icon:"👵", text:"the one I still want to be loving on when we're old and grey and neither of us can hear properly anymore. 😂"},
+  {icon:"🌸", text:"proof that good women actually exist. I used to think that was just something people said."},
+  {icon:"🏡", text:"the name next to mine on a deed somewhere. our house, not just my house."},
+  {icon:"🧳", text:"my passport buddy — the one I want next to me on every flight, every border, every new city."},
+  {icon:"📞", text:"the 2am call I'll always pick up, no matter what time zone we're in by then."},
+  {icon:"🩹", text:"the one who gets to see me not okay, and stays anyway."},
+  {icon:"🎉", text:"my plus one for absolutely everything, forever, no negotiation required."},
+  {icon:"🎂", text:"the birthday I'll still remember at 70, even on the days I forget where I put my glasses. 😂"},
+  {icon:"🛋️", text:"the one I fall asleep on the couch next to, mid-movie, every single time. 😂"},
+  {icon:"🧠", text:"the first person I want to tell every good thing that happens to me. before anyone else hears it."},
+  {icon:"🕰️", text:"still my favorite person to waste an entire afternoon doing absolutely nothing with."},
+  {icon:"👶", text:"the mother of my kids, whenever we're both ready. no rush. just certainty."},
+  {icon:"🌍", text:"the one I'd choose again. this life, and whatever comes after it."}
+];
+const bouquetEl = document.getElementById('bouquet');
+bouquetData.forEach(item=>{
+  const btn = document.createElement('button');
+  btn.className = 'bud';
+  const icon = document.createElement('span'); icon.className='bud-icon'; icon.textContent=item.icon;
+  const cap = document.createElement('span'); cap.className='bud-caption'; cap.textContent=item.text;
+  btn.appendChild(icon); btn.appendChild(cap);
+  btn.addEventListener('click', ()=>{ btn.classList.toggle('bloomed'); });
+  bouquetEl.appendChild(btn);
 });
 
-/* ---------------- data ---------------- */
-const humanQuestions = [
-  "Do you smile too much?",
-  "Do you randomly become adorable?",
-  "Have you ever stolen someone's peace?",
-  "Are you guilty of making one particular person stare at your pictures longer than necessary?"
-];
-
-const folderData = [
-  {icon:'📁', name:'Memories', entries:["LOG 088", "She sent a good morning text.", "Entire mood upgraded before breakfast."]},
-  {icon:'📁', name:'Smile Cache', entries:["LOG 214", "She smiled during a boring lecture.", "System saved it anyway. No regrets."]},
-  {icon:'📁', name:'Heart Logs', entries:["LOG 142", "She laughed.", "Entire day repaired."]},
-  {icon:'📁', name:'Classified', entries:["ACCESS LEVEL: MAXIMUM", "Reason for restriction:", "It's just her. That's the whole file."]},
-  {icon:'📁', name:'Developer Notes', entries:["// TODO: figure out how someone became this important", "// status: unresolved, in the best possible way"]}
-];
-
-const memEmojis = ['❤️','💋','☕','🌹','😊'];
-function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
-
-const PHOTO_SVG = '<svg class="photo-svg" width="140" height="140" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'
-  + '<defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">'
-  + '<stop offset="0%" stop-color="#ff8fb3"/><stop offset="100%" stop-color="#ff4b7d"/>'
-  + '</linearGradient></defs>'
-  + '<path d="M50 88 C20 65 5 45 5 28 C5 12 18 2 32 2 C42 2 48 8 50 14 C52 8 58 2 68 2 C82 2 95 12 95 28 C95 45 80 65 50 88 Z" fill="url(#hg)"/>'
-  + '<circle cx="35" cy="24" r="5" fill="rgba(255,255,255,0.5)"/>'
-  + '</svg>';
-
-/* ---------------- draggable shards (heart puzzle) ---------------- */
-function makeDraggable(shard, container, onDrop){
-  let dragging=false, startX=0, startY=0, origLeft=0, origTop=0, placedFlag=false;
-  shard.style.touchAction='none';
-  shard.addEventListener('pointerdown', e=>{
-    if(placedFlag) return;
-    dragging = true;
-    try{ shard.setPointerCapture(e.pointerId); }catch(err){}
-    startX = e.clientX; startY = e.clientY;
-    const rect = shard.getBoundingClientRect();
-    const parentRect = container.getBoundingClientRect();
-    origLeft = rect.left - parentRect.left;
-    origTop = rect.top - parentRect.top;
-    shard.style.left = origLeft+'px'; shard.style.top = origTop+'px';
-    shard.style.zIndex = 5;
-  });
-  shard.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    const dx = e.clientX-startX, dy = e.clientY-startY;
-    shard.style.left = (origLeft+dx)+'px';
-    shard.style.top = (origTop+dy)+'px';
-  });
-  function release(){
-    if(!dragging) return;
-    dragging = false;
-    const parentRect = container.getBoundingClientRect();
-    const shardRect = shard.getBoundingClientRect();
-    const cx = shardRect.left + shardRect.width/2 - parentRect.left;
-    const cy = shardRect.top + shardRect.height/2 - parentRect.top;
-    const tx = parentRect.width/2, ty = parentRect.height/2;
-    const dist = Math.hypot(cx-tx, cy-ty);
-    if(dist < 60){
-      shard.style.left = (tx - shard.offsetWidth/2)+'px';
-      shard.style.top = (ty - shard.offsetHeight/2)+'px';
-      placedFlag = true;
-      onDrop();
-    }
-  }
-  shard.addEventListener('pointerup', release);
-  shard.addEventListener('pointercancel', release);
-}
-
-/* ============================================================
-   SCENES
-   ============================================================ */
-
-async function sceneBoot(){
-  await typeLine('DaveOS v2.0 initializing...', {cls:'dim', speed:16});
-  await sleep(200);
-  await typeLine('(tap anywhere to speed up the text)', {cls:'dim', speed:14});
-  await sleep(300);
-  await typeLine('Loading kernel modules: heart.sys, memory.sys, humor.sys', {cls:'dim', speed:14});
-  await sleep(300);
-  await typeLine('Scanning...', {speed:30});
-  await sleep(450);
-  await typeLine('Checking visitor...', {speed:30});
-  await sleep(500);
-  await typeLine('Finding identity...', {speed:30});
-  await sleep(700);
-  await typeLine('Identity unknown.', {cls:'amber', speed:30});
-  await sleep(400);
-  await typeLine('Verification required.', {cls:'amber', speed:30});
-  addGap(true);
-  await sleep(300);
-  await typeLine('Only one person in the world can complete this verification.', {cls:'cyan big', speed:26});
-  await sleep(1000);
-  const btn = makeButton('[ Begin Verification ]');
-  addRaw(wrapCenter(btn));
-  await waitForClick(btn);
-}
-
-async function sceneChapter1(){
-  await clearScene();
-  await typeLine('CHAPTER ONE', {cls:'dim'});
-  await typeLine('Identity Verification', {cls:'big'});
-  await sleep(300);
-  await typeLine('Enter your name to proceed.', {speed:22});
-
-  const {input,btn,wrap} = makeTextPrompt('Full name...', '[ Submit ]');
-  let tries = 0;
-  while(true){
-    await waitForClick(btn);
-    const val = input.value.trim();
-    tries++;
-    if(val.toLowerCase().includes('phoebe')){ state.name = val; break; }
-    else if(tries >= 2){
-      state.name = 'Phoebe Collins';
-      await typeLine('Unrecognized input — running override protocol...', {cls:'dim'});
-      await sleep(500);
-      break;
-    } else {
-      await typeLine('No match found in the system.', {cls:'red'});
-      input.value=''; input.focus();
-    }
-  }
-  wrap.remove();
-  await typeLine('Searching...', {speed:26}); await sleep(450);
-  await typeLine('Searching...', {speed:26}); await sleep(450);
-  await typeLine('Searching...', {speed:26}); await sleep(650);
-  successTone();
-  await typeLine('One exact match found.', {cls:'cyan big'});
-  await sleep(300);
-  await typeLine('Confidence: 99.999999%', {cls:'cyan'});
-  await sleep(500);
-  const cont = makeButton('[ Continue ]');
-  addRaw(wrapCenter(cont));
-  await waitForClick(cont);
-}
-
-async function askYesNo(q){
-  await typeLine(q, {cls:'big'});
-  const row=document.createElement('div'); row.className='btn-row';
-  const yes=makeButton('YES'); const no=makeButton('NO','btn ghost');
-  row.appendChild(yes); row.appendChild(no);
-  addRaw(row);
-  while(true){
-    const r = await waitForEither(yes,no);
-    if(r === 'a'){ row.remove(); return; }
-    errorTone();
-    await typeLine('Lie detected.', {cls:'red'});
-    await sleep(450);
-  }
-}
-
-async function sceneChapter2(){
-  await clearScene();
-  await typeLine('CHAPTER TWO', {cls:'dim'});
-  await typeLine('Human Verification', {cls:'big'});
-  await sleep(300);
-  for(const q of humanQuestions){ await askYesNo(q); await sleep(250); }
-  await sleep(200);
-  successTone();
-  await typeLine('Verification passed. Subject is human. Mostly.', {cls:'cyan'});
-  await sleep(500);
-  const cont=makeButton('[ Continue ]'); addRaw(wrapCenter(cont)); await waitForClick(cont);
-}
-
-async function sceneChapter3(){
-  await clearScene();
-  await typeLine('CHAPTER THREE', {cls:'dim'});
-  await typeLine('Behaviour Investigation', {cls:'big'});
-  await sleep(300);
-  await typeLine('Compiling evidence log...', {cls:'dim'});
-  await sleep(500);
-
-  await typeLine('Evidence #01', {cls:'cyan'});
-  await typeLine('Photo viewed multiple times.');
-  await sleep(500);
-
-  await typeLine('Evidence #02', {cls:'cyan'});
-  await typeLine('Notification received.');
-  await typeLine('Owner smiled immediately.');
-  await sleep(500);
-
-  await typeLine('Evidence #03', {cls:'cyan'});
-  await typeLine('😒 emoji deployed.');
-  await typeLine('Minor cardiac event recorded.');
-  await sleep(500);
-
-  await typeLine('Evidence #04', {cls:'cyan'});
-  await typeLine('Owner denied allegations.');
-  await sleep(400);
-  errorTone();
-  await typeLine('Lie detected.', {cls:'red big'});
-  await sleep(700);
-
-  const cont=makeButton('[ Continue ]'); addRaw(wrapCenter(cont)); await waitForClick(cont);
-}
-
-async function sceneChapter4(){
-  await clearScene();
-  await typeLine('CHAPTER FOUR', {cls:'dim'});
-  await typeLine('Hidden Files', {cls:'big'});
-  await sleep(300);
-  await typeLine('Explore the directory. Some files were never meant to be found.', {speed:20});
-
-  const grid=document.createElement('div'); grid.className='folder-grid';
-  addRaw(grid);
-
-  const contBtn = makeButton('[ Continue → ]'); contBtn.disabled = true;
-  folderData.forEach(f=>{
-    const d=document.createElement('div'); d.className='folder';
-    d.innerHTML = '<span class="ic">'+f.icon+'</span>'+f.name;
-    d.addEventListener('click', async ()=>{
-      d.classList.add('opened');
-      if(!d.dataset.opened){
-        d.dataset.opened='1';
-        state.foldersOpened++;
-        contBtn.disabled = false;
-      }
-      await openModal(f.name, f.entries);
-    });
-    grid.appendChild(d);
-  });
-  addRaw(wrapCenter(contBtn));
-
-  await sleep(400);
-  await typeLine('Developer console unlocked. A command line has appeared below.', {cls:'dim'});
-  showCommandBar();
-
-  await waitForClick(contBtn);
-}
-
-/* ---- mini games ---- */
-async function gameHeartPuzzle(){
-  await typeLine('Restore the Heart', {cls:'cyan'});
-  await typeLine('Drag every fragment into the outline.', {speed:20});
-  const wrap=document.createElement('div'); wrap.className='puzzle-wrap';
-  const target=document.createElement('div'); target.className='puzzle-target'; target.textContent='🤍';
-  wrap.appendChild(target);
-  const shardSyms = ['◆','▲','▼','◈','◇','⬥'];
-  const positions = [[14,18],[74,14],[10,68],[78,66],[45,8],[45,80]];
-  let placed = 0;
-  const status = document.createElement('div'); status.className='puzzle-status';
-  shardSyms.forEach((sym,idx)=>{
-    const s=document.createElement('div'); s.className='shard'; s.textContent=sym;
-    s.style.color='#ff5577';
-    s.style.left = positions[idx][0]+'%'; s.style.top = positions[idx][1]+'%';
-    wrap.appendChild(s);
-    makeDraggable(s, wrap, ()=>{
-      s.classList.add('placed'); placed++;
-      status.textContent = 'Fragments gathered: '+placed+' / '+shardSyms.length;
-      tick();
-      if(placed === shardSyms.length){
-        target.textContent='❤️'; target.classList.add('filled');
-      }
-    });
-  });
-  addRaw(wrap);
-  status.textContent = 'Fragments gathered: 0 / '+shardSyms.length;
-  addRaw(status);
-
-  await new Promise(resolve=>{
-    const iv = setInterval(()=>{ if(placed === shardSyms.length){ clearInterval(iv); resolve(); } }, 200);
-  });
-  successTone();
-  await sleep(300);
-  await typeLine('Heart Restored.', {cls:'cyan big'});
-  await typeLine('Owner stability increased.', {cls:'dim'});
-  await sleep(500);
-}
-
-async function gameMemoryMatch(){
-  await typeLine('Memory Match', {cls:'cyan'});
-  await typeLine('Find every pair to unlock the next file.', {speed:20});
-  const deck = shuffle([...memEmojis, ...memEmojis]);
-  const grid=document.createElement('div'); grid.className='mem-grid';
-  addRaw(grid);
-  let first=null, second=null, lock=false, matches=0;
-  deck.forEach(sym=>{
-    const card=document.createElement('div'); card.className='mem-card';
-    const inner=document.createElement('div'); inner.className='mem-inner';
-    const back=document.createElement('div'); back.className='mem-face mem-back'; back.textContent='?';
-    const front=document.createElement('div'); front.className='mem-face mem-front'; front.textContent=sym;
-    inner.appendChild(back); inner.appendChild(front); card.appendChild(inner);
-    card.dataset.sym = sym;
-    card.addEventListener('click', ()=>{
-      if(lock || card.classList.contains('flipped') || card.classList.contains('matched')) return;
-      card.classList.add('flipped'); tick();
-      if(!first){ first = card; return; }
-      second = card; lock = true;
-      if(first.dataset.sym === second.dataset.sym){
-        first.classList.add('matched'); second.classList.add('matched');
-        matches++; first=null; second=null; lock=false;
-        chimeTone();
-      } else {
-        setTimeout(()=>{
-          first.classList.remove('flipped'); second.classList.remove('flipped');
-          first=null; second=null; lock=false;
-        }, 700);
-      }
-    });
-    grid.appendChild(card);
-  });
-  await new Promise(resolve=>{
-    const iv=setInterval(()=>{ if(matches === memEmojis.length){ clearInterval(iv); resolve(); } }, 250);
-  });
-  successTone();
-  await sleep(300);
-  await typeLine('Access Granted. Hidden files unlocked.', {cls:'cyan big'});
-  await sleep(500);
-}
-
-async function gameTyping(){
-  await typeLine('Complete the Sentence', {cls:'cyan'});
-  await typeLine('"I think Dave..."', {cls:'big'});
-  const {input,btn,wrap} = makeTextPrompt('type anything...');
-  btn.disabled = true;
-  input.addEventListener('input', ()=>{ btn.disabled = input.value.trim().length===0; });
-  await waitForClick(btn);
-  wrap.remove();
-  await sleep(200);
-  successTone();
-  await typeLine('Correct.', {cls:'cyan'});
-  await sleep(400);
-  await typeLine('The answer was:', {cls:'dim'});
-  await typeLine('"...likes you more than he admits."', {cls:'big'});
-  await sleep(500);
-}
-
-async function gamePassword(){
-  await typeLine('Password Required', {cls:'cyan'});
-  await typeLine('Hint: "The thing Dave says is coming."', {cls:'dim'});
-  const {input,btn,wrap} = makeTextPrompt('enter password...');
-  btn.disabled = true;
-  input.addEventListener('input', ()=>{ btn.disabled = input.value.trim().length===0; });
-  let attempts = 0;
-  while(true){
-    await waitForClick(btn);
-    const val = input.value.trim().toLowerCase();
-    attempts++;
-    if(val === 'joy is coming'){ break; }
-    if(attempts >= 3){
-      await typeLine('System taking pity on you... unlocking anyway. 😉', {cls:'amber'});
-      break;
-    }
-    errorTone();
-    await typeLine('Access denied. Try again.', {cls:'red'});
-    input.value=''; btn.disabled=true;
-  }
-  wrap.remove();
-  successTone();
-  await sleep(200);
-  await typeLine('Correct password. Deeper access granted.', {cls:'cyan big'});
-  await sleep(500);
-}
-
-async function gameEmoji(){
-  await typeLine('Decode the Message', {cls:'cyan'});
-  await typeLine('🤧🌚😒', {cls:'big center'});
-  const {input,btn,wrap} = makeTextPrompt('your translation...');
-  btn.disabled = true;
-  input.addEventListener('input', ()=>{ btn.disabled = input.value.trim().length===0; });
-  await waitForClick(btn);
-  wrap.remove();
-  await typeLine('Analyzing translation...', {cls:'dim'});
-  await sleep(500);
-  await typeLine('Close, but not quite.', {cls:'amber'});
-  await sleep(300);
-  await typeLine('Actual translation:', {cls:'dim'});
-  await typeLine('"I miss you."', {cls:'big'});
-  await sleep(500);
-}
-
-async function gamePhoto(){
-  await typeLine('Classified Image', {cls:'cyan'});
-  await typeLine('File corrupted. Decrypt to view.', {speed:20});
-  const frame=document.createElement('div'); frame.className='photo-frame';
-  frame.innerHTML = PHOTO_SVG;
-  addRaw(frame);
-  const range=document.createElement('input');
-  range.type='range'; range.min='0'; range.max='100'; range.value='0'; range.className='range-input';
-  addRaw(range);
-  const caption=document.createElement('div'); caption.className='hint'; caption.style.textAlign='center';
-  caption.textContent='drag to decrypt →';
-  addRaw(caption);
-
-  const svgEl = frame.querySelector('.photo-svg');
-  range.addEventListener('input', ()=>{
-    const blurPx = 18 - (range.value/100*18);
-    svgEl.style.filter = 'blur('+blurPx+'px)';
-  });
-
-  await new Promise(resolve=>{
-    function check(){
-      if(parseInt(range.value,10) >= 97){ range.removeEventListener('input', check); resolve(); }
-    }
-    range.addEventListener('input', check);
-  });
-  await sleep(300);
-  await typeLine('Decryption complete.', {cls:'cyan'});
-  await typeLine('Owner has viewed this image an unreasonable number of times.', {cls:'big'});
-  await sleep(600);
-}
-
-async function sceneChapter5(){
-  await clearScene();
-  await typeLine('CHAPTER FIVE', {cls:'dim'});
-  await typeLine('Mini-Games', {cls:'big'});
-  await sleep(300);
-  await typeLine('Six locks stand between you and the rest of the system.', {speed:20});
-  await sleep(700);
-  const games = [gameHeartPuzzle, gameMemoryMatch, gameTyping, gamePassword, gameEmoji, gamePhoto];
-  for(let i=0;i<games.length;i++){
-    await clearScene();
-    await typeLine('Lock '+(i+1)+' / '+games.length, {cls:'dim'});
-    await games[i]();
-    await sleep(300);
-  }
-  await clearScene();
-  successTone();
-  await typeLine('All locks cleared.', {cls:'cyan big'});
-  await sleep(400);
-  const cont=makeButton('[ Continue ]'); addRaw(wrapCenter(cont)); await waitForClick(cont);
-}
-
-async function sceneChapter6(){
-  await clearScene();
-  await typeLine('CHAPTER SIX', {cls:'dim'});
-  await typeLine('Emotional Scan', {cls:'big'});
-  await sleep(300);
-  await typeLine('Running diagnostics...', {cls:'dim'});
-  await sleep(500);
-
-  const scans = [
-    {label:'Kindness', value:100},
-    {label:'Smile', value:100},
-    {label:'Loyalty', value:100},
-    {label:'Beauty', value:100, overflow:true, text:'Overflow.'},
-    {label:'Ability to make Dave blush', value:92, frozen:true, text:'System frozen.'}
-  ];
-
-  for(const s of scans){
-    await typeLine('Checking '+s.label+'...', {speed:18});
-    const row=document.createElement('div'); row.className='scan-row';
-    const lab=document.createElement('div'); lab.className='scan-label';
-    const nameSpan=document.createElement('span'); nameSpan.textContent=s.label;
-    const pctSpan=document.createElement('span'); pctSpan.textContent='0%';
-    lab.appendChild(nameSpan); lab.appendChild(pctSpan);
-    const track=document.createElement('div'); track.className='scan-track';
-    const fill=document.createElement('div');
-    fill.className='scan-fill'+(s.overflow?' overflow':'')+(s.frozen?' frozen':'');
-    track.appendChild(fill);
-    row.appendChild(lab); row.appendChild(track);
-    addRaw(row);
-    await sleep(150);
-    fill.style.width = s.value+'%';
-    pctSpan.textContent = s.overflow ? '127% ⚠' : (s.frozen ? '—' : s.value+'%');
-    await sleep(1000);
-    if(s.text){
-      await sleep(300);
-      await typeLine(s.text, {cls: s.frozen ? 'red big' : 'amber'});
-      if(s.frozen){ errorTone(); await sleep(700); break; }
-    }
-    await sleep(300);
-  }
-  await sleep(700);
-}
-
-async function sceneChapter7(){
-  const win = document.getElementById('terminal-window');
-  win.classList.add('crashing');
-  errorTone();
-  await clearScene();
-  await typeLine('CRITICAL ERROR', {cls:'red big center', speed:16});
-  await sleep(400);
-  await typeLine('Core Dependency Missing.', {cls:'red'});
-  await typeLine('heart.dll failed to load.', {cls:'red'});
-  await sleep(500);
-  await typeLine('System shutting down...', {cls:'red dim'});
-  await sleep(800);
-  win.classList.remove('crashing');
-
-  await blackTransition(1800);
-  await clearScene();
-  await unblack();
-
-  await typeLine('Searching backup...', {cls:'dim'});
-  await sleep(700);
-  await typeLine('Searching backup...', {cls:'dim'});
-  await sleep(900);
-  successTone();
-  await typeLine('Backup located.', {cls:'cyan'});
-  await sleep(500);
-  await typeLine('Phoebe Connected.', {cls:'cyan big'});
-  await sleep(400);
-  await typeLine('DaveOS restored.', {cls:'cyan big'});
-  await sleep(700);
-  const cont=makeButton('[ Continue ]'); addRaw(wrapCenter(cont)); await waitForClick(cont);
-}
-
-async function sceneChapter8(){
-  await clearScene();
-  await typeLine('CHAPTER EIGHT', {cls:'dim'});
-  await typeLine('Transfer Ownership', {cls:'big'});
-  await sleep(400);
-  await typeLine('Administrator: Dave', {cls:'dim'});
-  await sleep(400);
-  await typeLine('Permission Request', {cls:'cyan'});
-  await typeLine('Transfer ownership?', {cls:'big'});
-  const btn=makeButton('[ YES ]');
-  const btnWrap = wrapCenter(btn);
-  addRaw(btnWrap);
-  await waitForClick(btn);
-  btnWrap.remove();
-  await sleep(300);
-  successTone();
-  await typeLine('Transferring...', {cls:'dim'});
-  await sleep(900);
-  await typeLine('Current Administrator:', {cls:'dim'});
-  await typeLine('Phoebe Collins 🌹', {cls:'cyan big'});
-  await sleep(300);
-  await typeLine('Root Access: Permanent', {cls:'cyan'});
-  const crown=document.createElement('div'); crown.className='crown-wrap'; crown.textContent='👑';
-  addRaw(crown);
-  await sleep(1200);
-  const cont=makeButton('[ Continue ]'); addRaw(wrapCenter(cont)); await waitForClick(cont);
-}
-
-async function sceneChapter9(){
-  await clearScene();
-  await typeLine('CHAPTER NINE', {cls:'dim'});
-  await typeLine('Final Qualification Test', {cls:'big'});
-  await sleep(500);
-  await typeLine('Checking...', {cls:'dim'});
-  await sleep(600);
-  const traits = ['Beauty','Smile','Heart','Kindness'];
-  for(const t of traits){
-    await typeLine(t+'...', {speed:18});
-    await sleep(350);
-    successTone();
-    await typeLine('Passed.', {cls:'cyan'});
-    await sleep(300);
-  }
-  await sleep(300);
-  await typeLine('Love...', {speed:18});
-  await sleep(500);
-  await typeLine('Infinite.', {cls:'cyan big'});
-  await sleep(700);
-  await typeLine('Decision...', {cls:'dim'});
-  await sleep(1400);
-  errorTone();
-  await typeLine('FAILED.', {cls:'red big center'});
-  await sleep(1400);
-  await typeLine('Reason:', {cls:'dim'});
-  await sleep(1000);
-  await typeLine('You are not qualified...', {speed:26});
-  await sleep(1000);
-  await typeLine('...to simply be called', {speed:26});
-  await sleep(400);
-  await typeLine('"my girlfriend."', {cls:'big', speed:26});
-  await sleep(1200);
-  await typeLine('You have become', {cls:'cyan', speed:24});
-  await sleep(500);
-  await typeLine('my peace.', {cls:'cyan big', speed:24}); await sleep(600);
-  await typeLine('my safest place.', {cls:'cyan big', speed:24}); await sleep(600);
-  await typeLine('my biggest smile.', {cls:'cyan big', speed:24}); await sleep(600);
-  await typeLine('my favourite notification.', {cls:'cyan big', speed:24}); await sleep(600);
-  await typeLine('my home.', {cls:'cyan big', speed:24});
-  await sleep(1500);
-  const cont=makeButton('[ ... ]');
-  cont.addEventListener('click', beginSongLoad, {once:true});
-  addRaw(wrapCenter(cont));
-  await waitForClick(cont);
-}
-
-function spawnPetals(){
-  const layer=document.getElementById('petal-layer');
-  layer.innerHTML='';
-  const syms=['🌹','❤️','✨'];
-  for(let i=0;i<16;i++){
-    const p=document.createElement('div'); p.className='petal';
-    p.textContent = syms[Math.floor(Math.random()*syms.length)];
-    p.style.left = Math.random()*100+'%';
-    p.style.animationDuration = (9+Math.random()*10)+'s';
-    p.style.animationDelay = (Math.random()*10)+'s';
-    p.style.fontSize = (0.8+Math.random()*1.1)+'rem';
-    layer.appendChild(p);
-  }
-}
-
-const LETTER_PARAGRAPHS = [
-  "Hi, Phoebe. 🌹❤️",
-  "If you're reading this, then congratulations… you successfully made it through every verification, every security check, every fake error, and every little prank I left for you. 🤭",
-  "But the truth is…",
-  "None of those were the real test.",
-  "The real test happened long before today.",
-  "The day you walked into my life without even knowing you were changing it.",
-  "You passed that one without trying.",
-  "Happy Girlfriend Day, my Forever Person. ❤️",
-  "I know I joke a lot.",
-  "I hide my feelings behind terminal screens, security alerts, system logs, and random Kali reports.",
-  "But if I removed every animation, every line of code, every joke, and every effect from this website…",
-  "I'd still arrive at the same destination.",
-  "You.",
-  "You have become one of the most beautiful parts of my life.",
-  "You're the notification I secretly hope to see.",
-  "You're the smile that somehow repairs an entire day.",
-  "You're the person whose pictures I pretend I only looked at once… even though the system logs know better. 😂❤️",
-  "You've made ordinary conversations feel like memories.",
-  "You've turned random moments into stories I'll remember.",
-  "You've made my heart feel at home.",
-  "And if I'm honest…",
-  "I don't think you truly realise how much you mean to me.",
-  "You once asked me if you were my heartbeat.",
-  "The answer is still yes.",
-  "Because whenever you're happy, something inside me feels lighter.",
-  "Whenever you're sad, my heart quietly wishes it could carry some of that weight for you.",
-  "Whenever you smile…",
-  "Mine follows automatically.",
-  "I know we won't always have perfect days.",
-  "There will be busy days.",
-  "Quiet days.",
-  "Days where distance annoys us.",
-  "Days where life gets loud.",
-  "But even on those days…",
-  "I want you to remember something.",
-  "I'm not looking for someone perfect.",
-  "I'm choosing you.",
-  "Again.",
-  "And again.",
-  "And again.",
-  "Thank you for every laugh.",
-  "Every random emoji.",
-  "Every late-night conversation.",
-  "Every \"I love you.\"",
-  "Every little moment you've given me without even realising how much it meant.",
-  "Thank you for being patient with me.",
-  "Thank you for trusting me with your heart.",
-  "Thank you for letting me become part of your world.",
-  "Today isn't special because the calendar says \"Happy Girlfriend Day.\"",
-  "Today is special because I get another chance to remind you that I'm grateful you're my girlfriend.",
-  "And if I had the opportunity to restart this life from the very beginning…",
-  "I'd still search for you.",
-  "I'd still choose you.",
-  "And I'd still hope you'd choose me too.",
-  "So here's my only request…",
-  "Keep smiling that smile I can't stop thinking about.",
-  "Keep being wonderfully, beautifully you.",
-  "And whenever life feels heavy…",
-  "Remember there's someone out here whose day genuinely becomes brighter because you exist.",
-  "I love you.",
-  "More than this website can display.",
-  "More than this system can calculate.",
-  "More than words have ever managed to explain.",
-  "Happy Girlfriend Day, my beautiful girl. 🌹❤️"
-];
-
-async function sceneFinalLetter(){
-  const appEl = document.getElementById('app');
-  const letterScene = document.getElementById('letter-scene');
-  const letterWrap = document.getElementById('letter-wrap');
-  hideCommandBar();
-  await blackTransition(600);
-  await waitForAudioReady(4000);
-  appEl.style.display = 'none';
-  letterWrap.innerHTML = '';
-  spawnPetals();
-  letterScene.classList.add('show');
-  fadeSongIn(0.55, 2000);
-  await unblack();
-
-  const h = document.createElement('h2');
-  h.textContent = 'One Last File. No Encryption This Time.';
-  letterWrap.appendChild(h);
-  await sleep(700);
-
-  for(const para of LETTER_PARAGRAPHS){
-    await typeLine(para, {cls:'letter-line', speed:32, noSkip:true, tick:false, container:letterWrap, cursorCls:'letter-cursor'});
-    await sleep(450);
-  }
-  await sleep(300);
-
-  const sign = document.createElement('div');
-  sign.className = 'letter-line sign enter';
-  sign.textContent = 'Forever yours, Dave ❤️';
-  letterWrap.appendChild(sign);
-  await sleep(1000);
-
-  const statusBox = document.createElement('div');
-  statusBox.className = 'status-box enter';
-  statusBox.innerHTML =
-    '<div><span class="k">Connection:</span> Stable ✅</div>'
-    + '<div><span class="k">Trust:</span> Infinite ♾️</div>'
-    + '<div><span class="k">Root Access:</span> Permanent 🔐</div>'
-    + '<div><span class="k">Chosen User:</span> Phoebe Collins 🌹</div>'
-    + '<div style="margin-top:10px">The best thing DaveOS ever found wasn\'t a file…<br>…it was you. ❤️</div>';
-  letterWrap.appendChild(statusBox);
-  await sleep(900);
-
-  const cont = document.createElement('button');
-  cont.className = 'letter-continue';
-  cont.textContent = 'continue →';
-  letterWrap.appendChild(cont);
-  requestAnimationFrame(()=>cont.classList.add('show'));
-  await waitForClick(cont);
-
-  stopAmbient();
-  fadeSongOut(1500);
-  await blackTransition(700);
-  letterScene.classList.remove('show');
-  appEl.style.display = 'flex';
-  await clearScene();
-  await unblack();
-}
-
-async function sceneAfterCredits(){
-  await clearScene();
-  await typeLine('Kali Report', {cls:'dim'});
-  await typeLine('Mission Outcome', {cls:'big'});
-  await sleep(500);
-  const rows = [['User Smiled','YES'],['User Blushed','YES'],['Owner Emotional','YES'],['Connection Stable','YES']];
-  for(const r of rows){
-    await typeLine(r[0]+': '+r[1], {cls:'cyan'});
-    await sleep(300);
-  }
-  await sleep(500);
-  await typeLine('Happy Girlfriend Day 🌹', {cls:'big center'});
-  await sleep(800);
-  await typeLine('System shutting down...', {cls:'dim'});
-  await sleep(1400);
-  const cont=makeButton('[ ... ]'); addRaw(wrapCenter(cont)); await waitForClick(cont);
-}
-
-async function sceneSecretEnding(){
-  await blackTransition(1500);
-  await clearScene();
-  await unblack();
-  await sleep(700);
-
-  const notif=document.createElement('div'); notif.className='notif';
-  notif.innerHTML = '<div class="notif-title">Incoming Message · Future Dave</div><div class="notif-body">tap to read</div>';
-  document.body.appendChild(notif);
-  chimeTone();
-  requestAnimationFrame(()=>notif.classList.add('show'));
-  await waitForClick(notif);
-  notif.classList.remove('show');
-  await sleep(500);
-  notif.remove();
-
-  await typeLine('From: Future Dave', {cls:'dim'});
-  await sleep(500);
-  await typeLine('"Take care of this girl.', {cls:'big'});
-  await typeLine("She's one of the best things that ever happened to us.\"", {cls:'big'});
-  await sleep(1500);
-
-  await typeLine('The verification was never about whether you were the right person.', {cls:'cyan', speed:26});
-  await sleep(600);
-  await typeLine('It was about showing you that this website was only ever built for one person…', {cls:'cyan', speed:26});
-  await sleep(600);
-  await typeLine('you.', {cls:'cyan big center', speed:40});
-  await sleep(1500);
-
-  await typeLine('🌹 The End 🌹', {cls:'big center'});
-  await sleep(800);
-
-  const replay=document.createElement('div'); replay.id='replay-wrap';
-  const rbtn=makeButton('[ Run DaveOS Again ]','btn ghost');
-  rbtn.addEventListener('click', ()=> location.reload());
-  replay.appendChild(rbtn);
-  addRaw(replay);
-  requestAnimationFrame(()=>replay.classList.add('show'));
-}
-
-async function main(){
-  await sceneBoot();
-  await sceneChapter1();
-  await sceneChapter2();
-  await sceneChapter3();
-  await sceneChapter4();
-  await sceneChapter5();
-  await sceneChapter6();
-  await sceneChapter7();
-  await sceneChapter8();
-  await sceneChapter9();
-  await sceneFinalLetter();
-  await sceneAfterCredits();
-  await sceneSecretEnding();
-}
-
-/* ---------------- boot triggers ---------------- */
-document.getElementById('power-btn').addEventListener('click', async ()=>{
-  ensureAudio();
-  bootTone();
-  document.getElementById('start-screen').classList.add('hidden');
-  await sleep(500);
-  main();
+/* ---------------- audio ---------------- */
+const song = document.getElementById('song');
+let muted = false;
+document.getElementById('begin-btn').addEventListener('click', ()=>{
+  document.getElementById('hero').classList.add('hidden');
+  song.volume = 0.5;
+  const p = song.play();
+  if(p && p.catch) p.catch(()=>{});
 });
-
-const muteBtn = document.getElementById('mute-btn');
-muteBtn.addEventListener('click', ()=>{
-  state.muted = !state.muted;
-  muteBtn.textContent = state.muted ? '🔇 muted' : '🔊 sound';
-  if(state.muted){
-    bgSong.pause();
-  } else if(document.getElementById('letter-scene').classList.contains('show')){
-    bgSong.play().catch(()=>{});
-    fadeSongIn(0.55, 800);
-  }
+document.getElementById('mute-btn').addEventListener('click', function(){
+  muted = !muted;
+  this.textContent = muted ? '🔇 muted' : '🔊 sound';
+  if(muted){ song.pause(); } else { const p=song.play(); if(p&&p.catch) p.catch(()=>{}); }
+});
+document.getElementById('replay-link').addEventListener('click', function(e){
+  e.preventDefault();
+  window.scrollTo({top:0, behavior:'smooth'});
 });
 </script>
 </body>
