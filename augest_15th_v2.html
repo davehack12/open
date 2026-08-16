@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Something I Planted For You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night1:#150c26;
+  --night2:#2c1a3f;
+  --mid1:#4a2748;
+  --mid2:#7a3f56;
+  --dawn1:#c97a86;
+  --dawn2:#f0a8a0;
+  --dawn3:#f6d3b8;
+  --dawn4:#fbe9d4;
+  --sage:#8fae86;
+  --sage-dark:#4f6b4c;
+  --cream:#fff8f0;
+  --ink:#3a2440;
+  --ink-soft:#5a4258;
+  --gold:#d9a45c;
+  --rose:#d97a95;
+  --rose-deep:#b8506f;
+  --display:'Playfair Display', Georgia, serif;
+  --body-font:'Cormorant Garamond', Georgia, serif;
+  --script:'Caveat', cursive;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  font-family:var(--body-font);
+  color:var(--cream);
+  background: linear-gradient(180deg,
+    var(--night1) 0%,
+    var(--night2) 12%,
+    var(--mid1) 30%,
+    var(--mid2) 48%,
+    var(--dawn1) 64%,
+    var(--dawn2) 76%,
+    var(--dawn3) 88%,
+    var(--dawn4) 100%);
+  overflow-x:hidden;
+  position:relative;
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+  html{ scroll-behavior:auto; }
+}
+
+#fireflies{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+
+/* ---------------- hero / tap to begin ---------------- */
+#hero{
+  position:fixed; inset:0; z-index:50;
+  background: radial-gradient(ellipse at 50% 30%, var(--night2) 0%, var(--night1) 70%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:32px; gap:14px;
+  transition: opacity 1.4s ease, visibility 1.4s ease;
+}
+#hero.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+.hero-seed{ font-size:2.6rem; margin-bottom:4px; animation:sway 3.5s ease-in-out infinite; }
+@keyframes sway{ 0%,100%{ transform:rotate(-4deg);} 50%{ transform:rotate(4deg);} }
+.hero-eyebrow{ font-family:var(--script); font-size:1.4rem; color:var(--rose); }
+.hero-title{ font-family:var(--display); font-style:italic; font-weight:600; font-size:clamp(1.6rem,7vw,2.4rem); color:var(--cream); max-width:420px; line-height:1.3; }
+.hero-sub{ font-size:1.05rem; color:#cbb8d6; letter-spacing:0.03em; }
+.hero-btn{
+  margin-top:14px;
+  font-family:var(--body-font); font-size:1.05rem; letter-spacing:0.04em;
+  background:transparent; border:1px solid var(--gold); color:var(--dawn3);
+  padding:13px 30px; border-radius:30px; cursor:pointer;
+  animation:pulseGlow 2.4s ease-in-out infinite;
+}
+@keyframes pulseGlow{
+  0%,100%{ box-shadow:0 0 6px rgba(217,164,92,0.25); }
+  50%{ box-shadow:0 0 18px rgba(217,164,92,0.5); }
+}
+
+/* ---------------- mute ---------------- */
+#mute-btn{
+  position:fixed; top:max(12px,env(safe-area-inset-top)); right:12px; z-index:55;
+  background:rgba(20,10,30,0.4); border:1px solid rgba(255,255,255,0.25); color:var(--dawn4);
+  border-radius:20px; padding:6px 12px; font-family:var(--body-font); font-size:0.85rem; cursor:pointer;
+  backdrop-filter:blur(6px);
+}
+
+/* ---------------- vine ---------------- */
+#vine-track{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:3px; height:100%; z-index:2;
+  background:rgba(255,255,255,0.08);
+  border-radius:3px;
+}
+#vine-fill{
+  width:100%; height:0%;
+  background:linear-gradient(180deg, var(--sage), var(--sage-dark));
+  border-radius:3px;
+  box-shadow:0 0 10px rgba(143,174,134,0.5);
+  transition:height 0.15s linear;
+}
+
+/* ---------------- story ---------------- */
+main{ position:relative; z-index:3; padding:0 20px; }
+.spacer-top{ height:100vh; }
+.stop{
+  max-width:520px; margin:0 auto; padding:70px 6px;
+  opacity:0; transform:translateY(26px);
+  transition:opacity 1s ease, transform 1s ease;
+  text-align:center;
+}
+.stop.in-view{ opacity:1; transform:translateY(0); }
+.stop .eyebrow{ font-family:var(--script); font-size:1.5rem; color:var(--rose); margin-bottom:6px; }
+.stop h2{
+  font-family:var(--display); font-weight:600; font-style:italic;
+  font-size:clamp(1.4rem,5.5vw,2rem); margin:0 0 16px; color:var(--cream);
+  line-height:1.3;
+}
+.stop p{
+  font-size:clamp(1.05rem,4vw,1.25rem); line-height:1.8; color:var(--dawn4);
+  margin:0 0 14px;
+}
+.stop p.typed{ opacity:0; transition:opacity 0.4s ease; }
+.stop h2.typed{ opacity:0; transition:opacity 0.4s ease; }
+.stop.on-dawn h2{ color:var(--ink); }
+.stop.on-dawn p{ color:var(--ink-soft); }
+.stop.on-dawn .eyebrow{ color:var(--rose-deep); }
+
+/* seed packet card */
+.packet{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:16px;
+  padding:26px 22px;
+  margin-top:18px;
+  text-align:left;
+}
+.stop.on-dawn .packet{ background:rgba(255,255,255,0.55); border-color:rgba(180,120,90,0.25); }
+.packet-title{ font-family:var(--display); font-style:italic; font-size:1.05rem; margin-bottom:14px; color:var(--dawn3); }
+.stop.on-dawn .packet-title{ color:var(--rose-deep); }
+.packet ul{ margin:0; padding-left:20px; }
+.packet li{ font-size:1.1rem; line-height:1.9; }
+
+/* bouquet */
+.bouquet{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:22px; }
+.bud{
+  background:none; border:none; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  width:126px; padding:6px;
+}
+.bud-icon{
+  font-size:2rem; display:inline-block;
+  filter:grayscale(0.6) opacity(0.7);
+  transform:scale(0.85) rotate(0deg);
+  transition:transform 0.5s cubic-bezier(.2,1.4,.4,1), filter 0.5s ease;
+}
+.bud.bloomed .bud-icon{
+  filter:grayscale(0) opacity(1) drop-shadow(0 0 8px rgba(217,164,92,0.5));
+  transform:scale(1.15) rotate(-6deg);
+}
+.bud-caption{
+  font-size:0.85rem; line-height:1.4; color:var(--dawn4);
+  max-height:0; opacity:0; overflow:hidden;
+  transition:max-height 0.5s ease, opacity 0.5s ease;
+}
+.stop.on-dawn .bud-caption{ color:var(--ink-soft); }
+.bud.bloomed .bud-caption{ max-height:190px; opacity:1; }
+.bud-hint{ font-size:0.75rem; color:rgba(255,255,255,0.4); margin-top:4px; }
+.stop.on-dawn .bud-hint{ color:rgba(58,36,64,0.4); }
+
+/* closing */
+.closing .eyebrow{ font-size:1.8rem; }
+.signature{
+  font-family:var(--script); font-size:2.2rem; color:var(--rose-deep);
+  margin-top:22px;
+}
+.closing-final{
+  font-size:1rem; color:var(--ink-soft); margin-top:26px; font-style:italic;
+}
+.end-mark{ text-align:center; padding:40px 0 90px; font-size:1.05rem; color:var(--ink-soft); }
+.end-mark a{ color:var(--rose-deep); text-decoration:none; border-bottom:1px dotted var(--rose-deep); }
+
+.gap{ height:8px; }
+</style>
+</head>
+<body>
+
+<canvas id="fireflies"></canvas>
+
+<div id="hero">
+  <div class="hero-seed">🌱</div>
+  <div class="hero-eyebrow">for Phoebe</div>
+  <div class="hero-title">Plant something with me?</div>
+  <div class="hero-sub">no occasion. just us.</div>
+  <button class="hero-btn" id="begin-btn">[ begin ]</button>
+</div>
+
+<button id="mute-btn">🔊 sound</button>
+
+<div id="vine-track"><div id="vine-fill"></div></div>
+
+<main>
+<div class="spacer-top"></div>
+
+<section class="stop">
+  <div class="eyebrow">no holiday today</div>
+  <h2>You already know pieces of this.</h2>
+  <p>I've said parts of it before — late at night, typed too fast, longer than any message should be. This time I wanted to say it slower.</p>
+  <p>So instead of something you scroll past in ten seconds, I built you somewhere to actually walk through it. Take your time. It took me a while too.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">before anything else</div>
+  <h2>It started smaller than this.</h2>
+  <p>No fireworks, if I'm honest. Just a conversation that didn't end when it should have, and then didn't end the next day either.</p>
+  <p>I didn't plant this on purpose. I just kept showing up, and somewhere in there it turned into something I couldn't uproot even if I tried.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">right now</div>
+  <h2>You have about 100% of me.</h2>
+  <p>Not the metaphor version. The actual, slightly embarrassing, can't-finish-a-sentence-without-you version.</p>
+  <p>I'll be in the middle of something completely unrelated — studying, fixing code, just walking somewhere — and somehow it circles back to you. Every time.</p>
+  <p>Ask anyone who's tried to have a real conversation with me lately. Half of it is you, whether I say your name out loud or not.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the first spark</div>
+  <h2>The moment I stopped calling it casual.</h2>
+  <p>There was a version of me that tried to keep this small. Low stakes. Easy to walk back from if it needed to be.</p>
+  <p>That version lost pretty quickly. I remember exactly where I was when I admitted, just to myself, that I wasn't going anywhere.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">what I'm sure of</div>
+  <h2>I don't really lose things I commit to.</h2>
+  <p>I've never actually had a failed project — only ones I chose to walk away from. And I'm not walking away from this. Not now, not when it's hard, not ever. That part was never up for negotiation.</p>
+  <p>Same rule applies here as everywhere else. I looked at us and decided, a long time ago, that this wasn't the kind of thing I quit.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the way you love</div>
+  <h2>You make ordinary things feel like enough.</h2>
+  <p>You have this way of remembering the small thing I mentioned once, weeks ago, like it mattered. It did. You just noticed before I said so.</p>
+  <p>You're patient with the version of me that's still figuring things out. Not the polished one. The actual one.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the hard part</div>
+  <h2>I know some seasons feel far apart.</h2>
+  <p>School. Distance. The version of us that only exists through a screen sometimes. I won't pretend that doesn't sting.</p>
+  <p>But it doesn't last forever — and even your mum will loosen the reins a little more every year, the way parents do. Time is actually on our side here, even on the days it doesn't feel like it.</p>
+  <p>So I do the boring, unglamorous things instead — the call before you sleep, the message that says nothing except that I'm thinking of you. Small deposits. They add up.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the quiet nights</div>
+  <h2>The version of missing you nobody sees.</h2>
+  <p>There are nights the room just feels a little too quiet, and I know exactly why. I don't always say it. Some nights I just sit with it.</p>
+  <p>I've gotten better at treating the distance like a season instead of a sentence. It's temporary. You're not.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">what keeps me steady</div>
+  <h2>Small promises, kept on purpose.</h2>
+  <p>It's not the big declarations that hold this together. It's the small stuff — answering when I say I will, showing up when it's inconvenient, choosing honesty over the easy lie.</p>
+  <p>Every one of those is a root. You don't see roots. You just notice that the thing doesn't fall over.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the years ahead</div>
+  <h2>Somewhere down the line, I want to look back at a day like this.</h2>
+  <p>A few years from now — still figuring things out, still choosing each other on purpose.</p>
+  <p>Ten years from now — further along, further sure, still ridiculous about you.</p>
+  <p>And whenever we're finally old and slow about everything — I still want to be the one making you laugh at something dumb I said.</p>
+  <p>I'm not in a rush to skip to any of it. I just like knowing it's there, waiting, already decided.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the ordinary days</div>
+  <h2>I don't need the good days. I need the normal ones.</h2>
+  <p>Anyone can be devoted on the days that are easy. I want the version where it's just Tuesday, nothing's happening, and I still choose you out of habit.</p>
+  <p>The laundry days. The tired days. The days with nothing to post about. Especially those.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the plan</div>
+  <h2>Here's my actual plan, if you want to know it.</h2>
+  <div class="packet">
+    <div class="packet-title">Instructions for growing something real —</div>
+    <ul>
+      <li>master everything I'm building</li>
+      <li>become the best version of myself</li>
+      <li>build my own money instead of waiting for someone to hand me a job</li>
+      <li>protect the peace between us, even when the world outside gets loud</li>
+      <li>come back to you first, no matter what the day pulled me into</li>
+      <li>spend the rest of my life with you</li>
+    </ul>
+  </div>
+  <p style="margin-top:18px">Not a dream anymore. A route. A to Z, already mapped, in permanent marker.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">if I'm honest</div>
+  <h2>I don't have this all figured out.</h2>
+  <p>Some days I worry I won't be enough of what you need. I'm telling you that instead of hiding it, because I'd rather you know the real version.</p>
+  <p>But not being finished isn't the same as not being sure. I'm still building myself into someone worth all this planning. That part I promise.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">why you, specifically</div>
+  <h2>Not because you're perfect. Because of how you make ordinary things feel safe.</h2>
+  <p>You're patient with me on the days I don't really deserve it. You make me want to become someone worth all this planning.</p>
+  <p>I've watched how you treat people who can't do anything for you. That told me everything I needed to know.</p>
+  <p>There's a line I keep coming back to — that good women actually exist, not just in theory. You're the reason I believe that now.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">the garden we're growing</div>
+  <h2>Look how far this has already come.</h2>
+  <p>This isn't a plan for someday anymore. Some of it already grew — the trust, the way we fight fair, the way you're the first call on both the good news and the bad.</p>
+  <p>I just want to keep tending it. Water it on the boring days, not only the pretty ones.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">what I want to give you</div>
+  <h2>Here's what I'm actually offering.</h2>
+  <p>Not perfect. Not always right. But steady. Honest, even when it's inconvenient. Someone in your corner before I'm anywhere else's.</p>
+  <p>Laughter on the hard days. Protection you never have to ask for. A hand that doesn't let go first.</p>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">once it's all done</div>
+  <h2>This is what's waiting on the other side.</h2>
+  <p style="opacity:0.85; font-size:0.95rem">tap each one</p>
+  <div class="bouquet" id="bouquet"></div>
+</section>
+
+<section class="stop">
+  <div class="eyebrow">just so you know</div>
+  <h2>This wasn't for an anniversary. There isn't one today.</h2>
+  <p>I just woke up thinking about you, the way I usually do, and this time I decided to actually build something instead of just telling you.</p>
+</section>
+
+<section class="stop stop-vow">
+  <div class="eyebrow">before the actual one</div>
+  <h2>Here's the closest thing I have to a vow, for now.</h2>
+  <p class="typed">I promise to keep choosing you on the ordinary days, not just the easy ones.</p>
+  <p class="typed">I promise to say the hard, honest thing instead of the easy comfortable one, even when it costs me something.</p>
+  <p class="typed">I promise the plan I showed you isn't a fantasy. It's a route, and you're the destination on every version of it.</p>
+  <p class="typed">I promise to keep showing up long after the newness wears off, because that's the part that actually counts.</p>
+  <p class="typed">And I promise that whatever this page says today, I'll still mean it in seven years, and every year after that.</p>
+</section>
+
+<section class="stop closing stop-closing">
+  <div class="eyebrow">the truth</div>
+  <h2 class="typed">I love you, momma.</h2>
+  <p>You did a really good job hacking your way into my heart.</p>
+  <p>I'm not changing the password. Full access. Permanently granted.</p>
+  <p>No firewall, no backup admin, no one else with root access. Just you.</p>
+  <p>And if it's ever forgotten — the security answer was always just us.</p>
+  <p class="typed">If you're crying right now… good. That was kind of the whole point.</p>
+  <div class="signature">Forever yours, Dave 🌷</div>
+  <div class="closing-final">I didn't build this for a date on a calendar. I built it because it's just another day, and I still can't stop thinking about you. That's the whole occasion.</div>
+</section>
+
+<div class="end-mark">🌷 grown, not scheduled. <br><a href="#top" id="replay-link">back to the beginning</a></div>
+</main>
+
+<audio id="song" preload="none" loop src="song3.mp3"></audio>
+
+<script>
+/* ---------------- fireflies ---------------- */
+(function(){
+  const canvas = document.getElementById('fireflies');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const count = Math.min(46, Math.floor((canvas.width*canvas.height)/26000));
+    particles = new Array(count).fill(0).map(()=>({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: 1 + Math.random()*1.8,
+      vy: -(0.15 + Math.random()*0.35),
+      vx: (Math.random()-0.5)*0.2,
+      phase: Math.random()*Math.PI*2
+    }));
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  let t = 0;
+  function draw(){
+    t += 0.02;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      p.y += p.vy; p.x += p.vx;
+      if(p.y < -10){ p.y = canvas.height+10; p.x = Math.random()*canvas.width; }
+      const glow = 0.4 + 0.6*Math.abs(Math.sin(t+p.phase));
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(217,164,92,'+(glow*0.85)+')';
+      ctx.shadowColor = 'rgba(217,164,92,0.8)';
+      ctx.shadowBlur = 8;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ---------------- vine growth on scroll ---------------- */
+const vineFill = document.getElementById('vine-fill');
+let ticking = false;
+function updateVine(){
+  const doc = document.documentElement;
+  const scrollable = doc.scrollHeight - window.innerHeight;
+  const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY/scrollable)) : 0;
+  vineFill.style.height = (progress*100)+'%';
+  ticking = false;
+}
+window.addEventListener('scroll', ()=>{
+  if(!ticking){ requestAnimationFrame(updateVine); ticking = true; }
+}, {passive:true});
+updateVine();
+
+/* ---------------- scroll reveals ---------------- */
+const stops = document.querySelectorAll('.stop');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('in-view');
+  });
+}, {threshold:0.25});
+stops.forEach(s=>io.observe(s));
+
+/* mark the last two stops as "on dawn" background for readable dark text */
+const dawnStops = Array.from(stops).slice(-2);
+dawnStops.forEach(s=>s.classList.add('on-dawn'));
+
+/* ---------------- slow typewriter for the vow + closing ---------------- */
+function typeParagraph(el, delay){
+  const text = el.textContent;
+  el.textContent = '';
+  let i = 0;
+  function step(){
+    if(i < text.length){
+      el.textContent += text[i];
+      i++;
+      setTimeout(step, 30 + Math.random()*22);
+    }
+  }
+  setTimeout(()=>{ el.style.opacity = '1'; step(); }, delay || 0);
+}
+const typedObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting && !e.target.dataset.typed){
+      e.target.dataset.typed = '1';
+      const els = e.target.querySelectorAll('.typed');
+      els.forEach((el,idx)=>{ typeParagraph(el, idx*700); });
+    }
+  });
+}, {threshold:0.5});
+document.querySelectorAll('.stop-vow, .stop-closing').forEach(s=>typedObserver.observe(s));
+
+/* ---------------- bouquet ---------------- */
+const bouquetData = [
+  {icon:"🌹", text:"your bride price. paid, eventually, and gladly — because you're worth doing this properly."},
+  {icon:"💍", text:"my wife. one day, officially, in front of everyone who ever doubted us."},
+  {icon:"🚗", text:"my passenger princess. the one I pull up for, no notice needed."},
+  {icon:"🔐", text:"the one who gets my phone password and my ATM pin. no locked doors between us."},
+  {icon:"🤕", text:"the one I'll prank about getting hit by a car, just to watch you panic for two seconds before I laugh. 😂"},
+  {icon:"🍳", text:"the one I'll make genuinely bad breakfast in bed for, because the effort matters more than the eggs. 😂"},
+  {icon:"🌅", text:"the one I want waking up next to me, for a very long time. not just the good mornings — all of them."},
+  {icon:"👵", text:"the one I still want to be loving on when we're old and grey and neither of us can hear properly anymore. 😂"},
+  {icon:"🌸", text:"proof that good women actually exist. I used to think that was just something people said."},
+  {icon:"🏡", text:"the name next to mine on a deed somewhere. our house, not just my house."},
+  {icon:"🧳", text:"my passport buddy — the one I want next to me on every flight, every border, every new city."},
+  {icon:"📞", text:"the 2am call I'll always pick up, no matter what time zone we're in by then."},
+  {icon:"🩹", text:"the one who gets to see me not okay, and stays anyway."},
+  {icon:"🎉", text:"my plus one for absolutely everything, forever, no negotiation required."},
+  {icon:"🎂", text:"the birthday I'll still remember at 70, even on the days I forget where I put my glasses. 😂"},
+  {icon:"🛋️", text:"the one I fall asleep on the couch next to, mid-movie, every single time. 😂"},
+  {icon:"🧠", text:"the first person I want to tell every good thing that happens to me. before anyone else hears it."},
+  {icon:"🕰️", text:"still my favorite person to waste an entire afternoon doing absolutely nothing with."},
+  {icon:"👶", text:"the mother of my kids, whenever we're both ready. no rush. just certainty."},
+  {icon:"🌍", text:"the one I'd choose again. this life, and whatever comes after it."}
+];
+const bouquetEl = document.getElementById('bouquet');
+bouquetData.forEach(item=>{
+  const btn = document.createElement('button');
+  btn.className = 'bud';
+  const icon = document.createElement('span'); icon.className='bud-icon'; icon.textContent=item.icon;
+  const cap = document.createElement('span'); cap.className='bud-caption'; cap.textContent=item.text;
+  btn.appendChild(icon); btn.appendChild(cap);
+  btn.addEventListener('click', ()=>{ btn.classList.toggle('bloomed'); });
+  bouquetEl.appendChild(btn);
+});
+
+/* ---------------- audio ---------------- */
+const song = document.getElementById('song');
+let muted = false;
+document.getElementById('begin-btn').addEventListener('click', ()=>{
+  document.getElementById('hero').classList.add('hidden');
+  song.volume = 0.5;
+  const p = song.play();
+  if(p && p.catch) p.catch(()=>{});
+});
+document.getElementById('mute-btn').addEventListener('click', function(){
+  muted = !muted;
+  this.textContent = muted ? '🔇 muted' : '🔊 sound';
+  if(muted){ song.pause(); } else { const p=song.play(); if(p&&p.catch) p.catch(()=>{}); }
+});
+document.getElementById('replay-link').addEventListener('click', function(e){
+  e.preventDefault();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+</script>
+</body>
+</html>
